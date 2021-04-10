@@ -1,0 +1,10 @@
+spring:
+  profiles:
+    active: dev
+  sa-token:
+    # token名称
+    token-name: token
+    # token有效期，单位s 默认30天, -1代表永不过期
+    timeout: 2592000
+    # token风格
+    token-style: uuid

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.yangcc.mapper.RoleMapper">
+    <!--role_menu-->
+    <resultMap id="roleMap" type="Role" extends="baseRoleMap">
+        <!--role对应的menu-->
+        <collection
+                property="menuList"
+                ofType="int"
+                column="id"
+                select="top.yangcc.mapper.RoleMapper.findMenuListByRid">
+        </collection>
+    </resultMap>
+    <!--menu-->
+    <resultMap id="baseMenuMap" type="int">
+        <id column="mid" property="id"/>
+    </resultMap>
+    <!--role-->
+    <resultMap id="baseRoleMap" type="Role">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+        <result column="create_time" property="createTime"/>
+        <result column="info" property="info"/>
+        <result column="admin" property="admin"/>
+    </resultMap>
+
+
+    <!--条件查询-->
+    <select id="findByCondition" resultMap="roleMap" parameterType="string">
+        select *
+        from m_role
+        <if test="value != null and value.length>0">
+            where name like concat(#{value},'%')
+            OR code like concat(#{value},'%')
+            OR id = #{value}
+        </if>
+    </select>
+
+    <!--查询menu-->
+    <select id="findMenuListByRid" resultMap="baseMenuMap" parameterType="int">
+        select menu_id mid from m_role_menu rm where rm.role_id=#{rid}
+    </select>
+
+
+    <!--查询所有的是管理员的角色-->
+    <select id="findAllAdminRole" resultType="Role">
+        select * from m_role where admin=true;
+    </select>
+
+    <!--查询所有的是user的角色-->
+    <select id="findAllUserRole" resultType="Role">
+        select * from m_role where admin=false;
+    </select>
+    
+    <!--根据code查询角色id-->
+    <select id="findIdByCode" parameterType="string" resultType="int">
+        select m_role.id from m_role where code=#{code}
+    </select>
+
+    <!--新建角色-->
+    <insert id="add" parameterType="Role">
+        <selectKey resultType="Integer" order="AFTER" keyProperty="id">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into m_role(name, code,create_time,info) values (#{name},#{code},#{createTime},#{info})
+    </insert>
+
+
+
+    <!--设置role menu的中间表-->
+    <insert id="addRoleMenu" parameterType="map">
+        insert into m_role_menu(role_id, menu_id) values(#{role_id},#{menu_id})
+    </insert>
+
+    <!--修改角色-->
+    <update id="edit" parameterType="Role">
+        update m_role
+        <set>
+            <if test="name !=null">
+                name =#{name},
+            </if>
+            <if test="code !=null">
+                code = #{code},
+            </if>
+            <if test="createTime !=null">
+                create_time = #{createTime},
+            </if>
+            <if test="info !=null">
+                info = #{info},
+            </if>
+        </set>
+        where id =#{id}
+    </update>
+
+    <!--删除关联关系-->
+    <delete id="deleteRoleMenu" parameterType="int">
+        delete from m_role_menu where role_id=#{id}
+    </delete>
+
+
+    <!--删除角色-->
+    <delete id="delete" parameterType="int">
+        delete from m_role where id=#{id}
+    </delete>
+
+</mapper>

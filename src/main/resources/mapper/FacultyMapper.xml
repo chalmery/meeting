@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.yangcc.mapper.FacultyMapper">
+    <!--查询全部的可教学系楼名字-->
+    <select id="findFacultyNameForTeach" resultType="String">
+        select name from m_faculty where teach = true;
+    </select>
+
+    <!--查询全部楼的名称,地点-->
+    <select id="findAllName" resultType="Map">
+        select name,location from m_faculty
+    </select>
+
+    <!--条件查询-->
+    <select id="findByCondition" parameterType="String" resultType="Faculty">
+        select * from m_faculty where
+        <if test="value !=null">
+            name like concat(#{value},'%')
+            or location like concat(#{value},'%')
+        </if>
+    </select>
+
+    <!--根据id查询院系-->
+    <select id="findById" resultType="Faculty" parameterType="int">
+        select * from m_faculty where id=#{id};
+    </select>
+
+    <!--根据名称，查询id-->
+    <select id="findIdByName" resultType="Integer" parameterType="String">
+        select id from m_faculty where name=#{name};
+    </select>
+
+    <!--新建院系-->
+    <insert id="add" parameterType="Faculty">
+        insert into m_faculty(name, location, teach) values (#{name},#{location},#{teach})
+    </insert>
+
+    <!--更新院系-->
+    <update id="edit" parameterType="Faculty">
+        update m_faculty
+        <set>
+            <if test="name !=null">
+                name =#{name},
+            </if>
+            <if test="location !=null">
+                location = #{location},
+            </if>
+            <if test="teach !=null">
+                teach=#{teach},
+            </if>
+        </set>
+        where id =#{id}
+    </update>
+
+    <!--删除院系-->
+    <delete id="delete" parameterType="int">
+        delete from m_faculty where id=#{id}
+    </delete>
+
+</mapper>

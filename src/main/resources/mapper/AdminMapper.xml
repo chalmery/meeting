@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.yangcc.mapper.AdminMapper">
+    <!--user_role-->
+    <resultMap id="adminMap" type="User">
+        <id column="uid" property="id"/>
+        <result column="avatar" property="avatar"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="admin" property="admin"/>
+        <!--role-->
+        <collection property="role" ofType="Role">
+            <id column="rid" property="id"/>
+            <result column="rname" property="name"/>
+            <result column="code" property="code"/>
+        </collection>
+        <!--faculty-->
+        <collection property="faculty" ofType="Faculty">
+            <id column="fid" property="id"/>
+            <result column="fname" property="name"/>
+        </collection>
+    </resultMap>
+    <!--分页查询所有的admin用户的信息-->
+    <select id="findAdminByCondition" resultMap="adminMap" parameterType="top.yangcc.request.User">
+        select u.id uid,u.username,u.avatar,r.id rid,r.name rname,r.code,f.id fid,f.name fname
+        from m_user u,m_role r,m_faculty f
+        where u.role_id= r.id and f.id=u.faculty_id and u.admin =true
+        <if test="id !=null">
+            and u.id = #{id}
+        </if>
+        <if test="username !=null and username.length>0">
+            and  u.username like concat(#{username},'%')
+        </if>
+        <if test="role !=null and role.length>0">
+            and  r.code like concat(#{role},'%')
+        </if>
+        <if test="faculty !=null and faculty.length>0">
+            and  f.name like concat(#{faculty},'%')
+        </if>
+    </select>
+
+
+    <!--根据用户id查询用户头像-->
+    <select id="findAvatarById" resultType="string" parameterType="int">
+        select avatar from m_user where id=#{id};
+    </select>
+
+    <!--查询用户是否已经存在-->
+    <select id="findCountByUsername" resultType="int" parameterType="string">
+        select count(*) from m_user where username=#{username}
+    </select>
+
+    <!--新建admin用户-->
+    <insert id="add" parameterType="User">
+        insert into m_user(username, password, faculty_id, admin, avatar, role_id)
+        VALUES(#{username},#{password},#{faculty.id},#{admin},#{avatar},#{role.id})
+    </insert>
+
+
+    <!--修改admin用户-->
+    <update id="edit" parameterType="User">
+        update m_user
+        <set>
+            <if test="username !=null">
+                username =#{username},
+            </if>
+            <if test="password !=null">
+                password= #{password},
+            </if>
+            <if test="avatar !=null">
+                avatar = #{avatar},
+            </if>
+            role_id = #{role.id},
+            faculty_id = #{faculty.id}
+        </set>
+        where id =#{id}
+    </update>
+
+    <!--删除admin用户-->
+    <delete id="delete" parameterType="int">
+        delete from m_user where id=#{id}
+    </delete>
+</mapper>

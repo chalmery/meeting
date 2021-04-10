@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.yangcc.mapper.MeetingRoomMapper">
+    <!--user_role-->
+    <resultMap id="MeetingRoomMap" type="MeetingRoom">
+        <id column="mid" property="id"/>
+        <result column="img" property="img"/>
+        <result column="room" property="room"/>
+        <result column="capacity" property="capacity"/>
+        <result column="status" property="status"/>
+        <result column="info" property="info"/>
+        <!--faculty-->
+        <collection property="faculty" ofType="Faculty">
+            <id column="fid" property="id"/>
+            <result column="name" property="name"/>
+            <result column="location" property="location"/>
+        </collection>
+    </resultMap>
+
+    <!--新建会议室-->
+    <insert id="add" parameterType="MeetingRoom">
+        <selectKey resultType="Integer" order="AFTER" keyProperty="id">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into m_meetingroom(img,capacity, status, info,faculty_id) values (#{img}, #{capacity}, #{status}, #{info},#{faculty_id})
+    </insert>
+
+    <!--条件查询-->
+    <select id="findByCondition" parameterType="MeetingRoom" resultMap="MeetingRoomMap">
+        select m.*,m.id mid,f.id fid ,f.name,f.location
+        from m_meetingroom m,m_faculty f where m.faculty_id =f.id
+        <if test="id !=null">
+            and m.id = #{id}
+        </if>
+        <if test="capacity !=null">
+            and  m.capacity >= #{capacity}
+        </if>
+        <if test="status !=null and status.length>0">
+            and  m.status like concat(#{status},'%')
+        </if>
+        <if test="faculty.name !=null and faculty.name.length>0 ">
+            and  f.name like concat(#{faculty.name},'%')
+        </if>
+        <if test="faculty.location !=null and faculty.location.length>0">
+            and  f.location like concat(#{faculty.location},'%')
+        </if>
+    </select>
+    <!--修改会议室-->
+    <update id="edit" parameterType="MeetingRoom">
+        update m_meetingroom
+        <set>
+            <if test="img!=null">
+                img=#{img},
+            </if>
+            <if test="location!=null">
+                location=#{location},
+            </if>
+            <if test="capacity!=null">
+                capacity=#{capacity},
+            </if>
+            <if test="status!=null">
+                status=#{status},
+            </if>
+            <if test="info!=null">
+                info=#{info},
+            </if>
+            <if test="faculty!=null">
+                faculty=#{faculty},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <!--删除会议室-->
+    <delete id="delete" parameterType="int">
+        delete from m_meetingroom where id=#{id}
+    </delete>
+
+    <!--根据id查图片名-->
+    <select id="findImgById" parameterType="int" resultType="string">
+        select img from m_meetingroom where id=#{id}
+    </select>
+
+    <!--根据院系名称查询会议室地点，和可容纳人数-->
+    <select id="findByFaculty" resultType="map" parameterType="string">
+        select capacity from m_meetingroom
+    </select>
+</mapper>
