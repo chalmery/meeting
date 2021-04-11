@@ -27,7 +27,7 @@ public interface FacultyMapper {
      * 查询全部楼的名称
      * @return 返回全部楼信息
      */
-    List<HashMap<String,String>> findAllName();
+    List<Faculty> findAll();
 
 
     /**

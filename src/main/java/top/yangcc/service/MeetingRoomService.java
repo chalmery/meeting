@@ -3,8 +3,6 @@ package top.yangcc.service;
 import org.springframework.web.multipart.MultipartFile;
 import top.yangcc.response.PageResult;
 import top.yangcc.response.QueryMeetingRoomPageBean;
-import top.yangcc.response.QueryPageBean;
-import top.yangcc.response.Result;
 import top.yangcc.entity.MeetingRoom;
 
 import java.io.IOException;
@@ -22,7 +20,7 @@ public interface MeetingRoomService {
      * 根据前端传来的图片文件，以及表单信息进行处理
      * @param file 文件
      * @param meetingRoom meetingRoom对象
-     * @exception IOException io异常
+     * @throws  IOException io异常
      */
     void upload(MultipartFile file, MeetingRoom meetingRoom) throws IOException;
 
@@ -49,7 +47,7 @@ public interface MeetingRoomService {
      * 更新会议室信息并且修改会议室图片
      * @param file 会议室的图片
      * @param meetingRoom 会议室信息
-     * @exception IOException io异常
+     * @throws  IOException io异常
      */
     void editAndUpload(MultipartFile file, MeetingRoom meetingRoom) throws IOException;
 

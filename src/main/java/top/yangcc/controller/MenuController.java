@@ -21,7 +21,7 @@ public class MenuController {
 
     /**
      * 获取全部的菜单
-     *     @SaCheckLogin
+     * @SaCheckLogin
      * 只有登陆后才可访问
      */
 

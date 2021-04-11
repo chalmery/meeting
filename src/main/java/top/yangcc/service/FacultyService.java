@@ -26,7 +26,7 @@ public interface FacultyService {
      * 查询全部的楼
      * @return 返回数组
      */
-    List<HashMap<String,String>> findAllName();
+    List<Faculty> findAll();
 
     /**
      * 分页查询

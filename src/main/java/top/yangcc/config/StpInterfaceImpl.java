@@ -14,8 +14,13 @@ import java.util.List;
  */
 @Component
 public class StpInterfaceImpl implements StpInterface {
-    @Autowired
+
     private PermissionService permissionService;
+
+    @Autowired
+    public StpInterfaceImpl(PermissionService permissionService) {
+        this.permissionService = permissionService;
+    }
 
     /**
      * 返回一个账号所拥有的权限码集合

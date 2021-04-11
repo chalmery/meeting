@@ -7,8 +7,8 @@
     </select>
 
     <!--查询全部楼的名称,地点-->
-    <select id="findAllName" resultType="Map">
-        select name,location from m_faculty
+    <select id="findAll" resultType="Faculty">
+        select * from m_faculty
     </select>
 
     <!--条件查询-->

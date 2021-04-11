@@ -23,4 +23,9 @@ public class Faculty implements Serializable {
     private String location;
     /** 院系是否是教学楼*/
     private Boolean teach;
+
+    public Faculty(String name, String location) {
+        this.name = name;
+        this.location = location;
+    }
 }

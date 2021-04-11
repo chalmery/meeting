@@ -47,12 +47,13 @@ public class FacultyController {
     /**
      * 查询全部楼信息
      */
-    @RequestMapping("/findAllName")
-    public Result findAllName(){
+    @RequestMapping("/findAll")
+    public Result findAll(){
         try {
-            List<HashMap<String,String>> facultyNameForTeach = facultyService.findAllName();
+            List<Faculty> facultyNameForTeach = facultyService.findAll();
             return Result.success(facultyNameForTeach);
         } catch (Exception e) {
+            e.printStackTrace();
             return Result.fail("查询学院信息失败");
         }
     }

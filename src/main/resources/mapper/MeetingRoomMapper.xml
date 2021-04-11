@@ -19,10 +19,8 @@
 
     <!--新建会议室-->
     <insert id="add" parameterType="MeetingRoom">
-        <selectKey resultType="Integer" order="AFTER" keyProperty="id">
-            select LAST_INSERT_ID()
-        </selectKey>
-        insert into m_meetingroom(img,capacity, status, info,faculty_id) values (#{img}, #{capacity}, #{status}, #{info},#{faculty_id})
+        insert into m_meetingroom(img,capacity,room, status, info,faculty_id)
+        values (#{img}, #{capacity},#{room}, #{status}, #{info},#{faculty.id})
     </insert>
 
     <!--条件查询-->
@@ -49,23 +47,23 @@
     <update id="edit" parameterType="MeetingRoom">
         update m_meetingroom
         <set>
-            <if test="img!=null">
+            <if test="img!=null and room.length>0">
                 img=#{img},
             </if>
-            <if test="location!=null">
+            <if test="room!=null and room.length>0">
                 location=#{location},
             </if>
             <if test="capacity!=null">
                 capacity=#{capacity},
             </if>
-            <if test="status!=null">
+            <if test="status!=null and status.length>0">
                 status=#{status},
             </if>
-            <if test="info!=null">
+            <if test="info!=null and info.length>0">
                 info=#{info},
             </if>
-            <if test="faculty!=null">
-                faculty=#{faculty},
+            <if test="faculty.id !=null">
+                faculty_id=#{faculty.id},
             </if>
         </set>
         where id=#{id}

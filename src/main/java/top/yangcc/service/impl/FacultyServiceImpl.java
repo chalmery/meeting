@@ -17,7 +17,6 @@ import top.yangcc.response.QueryPageBean;
 import top.yangcc.service.FacultyService;
 
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -51,8 +50,8 @@ public class FacultyServiceImpl implements FacultyService {
      * @return 返回楼的数组
      */
     @Override
-    public List<HashMap<String,String>> findAllName() {
-        return facultyMapper.findAllName();
+    public List<Faculty> findAll() {
+        return facultyMapper.findAll();
     }
 
     /**

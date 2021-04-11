@@ -7,9 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import top.yangcc.entity.Faculty;
 import top.yangcc.response.PageResult;
 import top.yangcc.response.QueryMeetingRoomPageBean;
-import top.yangcc.response.QueryPageBean;
 import top.yangcc.mapper.FacultyMapper;
 import top.yangcc.mapper.MeetingRoomMapper;
 import top.yangcc.entity.MeetingRoom;
@@ -50,8 +50,14 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
         String fileName = UUID.randomUUID() + "." + split;
         //然后上传七牛云
         QiNiuUtil.upload(file.getBytes(), fileName);
-        // 通过拿到的会议室信息进行数据库插入
         meetingRoom.setImg(fileName);
+        //查询此院系名称对应的院系id
+        Integer facultyId = facultyMapper.findIdByName(meetingRoom.getFaculty().getName());
+        //保存
+        Faculty faculty = meetingRoom.getFaculty();
+        faculty.setId(facultyId);
+        meetingRoom.setFaculty(faculty);
+        // 通过拿到的会议室信息进行数据库插入
         meetingRoomMapper.add(meetingRoom);
     }
 
@@ -74,6 +80,13 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
      */
     @Override
     public void edit(MeetingRoom meetingRoom) {
+        //查询此院系名称对应的院系id
+        Integer facultyId = facultyMapper.findIdByName(meetingRoom.getFaculty().getName());
+        //保存
+        Faculty faculty = meetingRoom.getFaculty();
+        faculty.setId(facultyId);
+        meetingRoom.setFaculty(faculty);
+        //修改
         meetingRoomMapper.edit(meetingRoom);
     }
 
@@ -93,6 +106,14 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
         QiNiuUtil.upload(file.getBytes(), fileName);
         // 新的图片名称
         meetingRoom.setImg(fileName);
+        meetingRoom.setImg(fileName);
+        //查询此院系名称对应的院系id
+        Integer facultyId = facultyMapper.findIdByName(meetingRoom.getFaculty().getName());
+        //保存
+        Faculty faculty = meetingRoom.getFaculty();
+        faculty.setId(facultyId);
+        meetingRoom.setFaculty(faculty);
+        //修改
         meetingRoomMapper.edit(meetingRoom);
     }
 
