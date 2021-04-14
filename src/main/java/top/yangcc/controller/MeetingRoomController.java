@@ -119,15 +119,15 @@ public class MeetingRoomController {
 
 
     /**
-     * 根据会议室院系查询会议地点
-     * @param map faculty
+     * 根据院系查询会议室
+     * @param id facultyId
      * @return list
      */
-    @RequestMapping("/findByFaculty")
-    public Result findByFaculty(@RequestBody Map<String,String> map){
+    @RequestMapping("/findByFacultyId/{id}")
+    public Result findByFaculty(@PathVariable Integer id){
         try {
-            List<HashMap<String,String>> faculty = meetingRoomService.findByFaculty(map.get("faculty"));
-            return Result.success(faculty);
+            List<MeetingRoom> meetingRoom = meetingRoomService.findByFacultyId(id);
+            return Result.success(meetingRoom);
         } catch (Exception e) {
             e.printStackTrace();
             return Result.fail("查询失败");

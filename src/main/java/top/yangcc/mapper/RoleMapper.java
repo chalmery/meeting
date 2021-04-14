@@ -32,12 +32,21 @@ public interface RoleMapper {
      */
     List<Role> findAllUserRole();
 
+
+
     /**
      * 查询roleId
      * @param role code
      * @return id
      */
     Integer findIdByCode(String role);
+
+    /**
+     * 查询roleId
+     * @param role code
+     * @return id
+     */
+    Integer findIdByName(String role);
 
     /**
      * 根据角色id查询菜单id

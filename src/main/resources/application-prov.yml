@@ -24,7 +24,7 @@ aj:
     type: default
     jigsaw: classpath:images/jigsaw
     pic-click: classpath:images/pic-click
-    water-mark: login
+    water-mark:
     slip-offset: 5
     aes-status: true
     interference-options: 0

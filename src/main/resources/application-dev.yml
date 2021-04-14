@@ -14,13 +14,25 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     username: root
     password: root
+  # rabbitMq
+  rabbitmq:
+    addresses: 127.0.0.1
+    port: 5672
+    username: admin
+    password: admin
+    virtual-host: /meeting
+    # 手动ack
+    listener:
+      simple:
+        acknowledge-mode: manual
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
 #mybatis
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: top.yangcc.entity
   configuration:
     map-underscore-to-camel-case: true
-
 #pagehelper
 pagehelper:
   helper-dialect: mysql
@@ -31,7 +43,7 @@ aj:
     type: default
     jigsaw: classpath:images/jigsaw
     pic-click: classpath:images/pic-click
-    water-mark: login
+    water-mark:
     slip-offset: 5
     aes-status: true
     interference-options: 0

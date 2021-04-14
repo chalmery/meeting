@@ -23,18 +23,16 @@ public class Meeting {
     private String name;
     /** 开始时间 */
     @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @JsonFormat(timezone = "GMT+8",locale = "zh",pattern = "yyyy-MM-dd HH:mm")
     private Date start;
     /** 结束时间 */
     @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @JsonFormat(timezone = "GMT+8",locale = "zh",pattern = "yyyy-MM-dd HH:mm")
     private Date end;
     /** 会议简介 */
     private String info;
     /** 会议状态 未进行，正在进行，已经结束 */
     private String status;
     /** 要参加的人员 */
-    private List<Integer> members;
+    private List<User> members;
     /** 会议室 */
     private MeetingRoom meetingRoom;
     /** 操作时间 */

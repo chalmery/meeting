@@ -17,12 +17,12 @@
         <java.version>1.8</java.version>
     </properties>
     <dependencies>
-        <!--定时任务-->
+        <!--rabbitmq-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-quartz</artifactId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
-        <!--satoken-->
+        <!--sa token-->
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-spring-boot-starter</artifactId>

@@ -23,14 +23,5 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public void add(Meeting meeting) {
         //新建会议
-        meetingMapper.add(meeting);
-        Integer meetingId = meeting.getId();
-        Map<String, Integer> map;
-        for (Integer id : meeting.getMembers()) {
-            map = new HashMap<>(4);
-            map.put("meeting_id",meetingId);
-            map.put("user_id",id);
-            meetingMapper.addMeetingAndUser(map);
-        }
     }
 }

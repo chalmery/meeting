@@ -58,6 +58,11 @@
         select m_role.id from m_role where code=#{code}
     </select>
 
+    <!--根据name查询角色id-->
+    <select id="findIdByName" parameterType="string" resultType="int">
+        select id from m_role where name=#{name}
+    </select>
+
     <!--新建角色-->
     <insert id="add" parameterType="Role">
         <selectKey resultType="Integer" order="AFTER" keyProperty="id">

@@ -12,6 +12,7 @@ import top.yangcc.service.UserService;
 import top.yangcc.utils.PictureVerify;
 
 import java.io.IOException;
+import java.util.List;
 
 
 /**
@@ -29,6 +30,17 @@ public class UserController {
         this.userService = userService;
     }
 
+    /** 查询所有的用户信息,根据院系id */
+    @RequestMapping("/findByFacultyId/{id}")
+    public Result findByFacultyId(@PathVariable Integer id){
+        try {
+            List<top.yangcc.entity.User> users =  userService.findByFacultyId(id);
+            return Result.success(users);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("查询失败");
+        }
+    }
     /** 分页查询 */
     @RequestMapping("/findPage")
     public Result findPage(@RequestBody QueryUserPageBean queryUserPageBean){

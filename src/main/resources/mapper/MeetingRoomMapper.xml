@@ -79,8 +79,8 @@
         select img from m_meetingroom where id=#{id}
     </select>
 
-    <!--根据院系名称查询会议室地点，和可容纳人数-->
-    <select id="findByFaculty" resultType="map" parameterType="string">
-        select capacity from m_meetingroom
+    <!--根据院系id查询所有的会议室信息-->
+    <select id="findByFacultyId" resultType="MeetingRoom" parameterType="int">
+        select * from m_meetingroom where faculty_id=#{id}
     </select>
 </mapper>

@@ -28,6 +28,14 @@ public interface UserMapper {
      */
     Role findRoleByUserId(Integer uid);
 
+
+    /**
+     * 查询所有的用户信息
+     * @param id 院系id
+     * @return User
+     */
+    List<User> findByFacultyId(Integer id);
+
     /**
      * 查询对应的院系是否还有用户
      * @param id id
@@ -66,6 +74,5 @@ public interface UserMapper {
      * @param id id
      */
     void delete(Integer id);
-
 
 }

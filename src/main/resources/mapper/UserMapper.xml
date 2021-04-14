@@ -55,6 +55,14 @@
         select count(*) from m_user where faculty_id=#{id}
     </select>
 
+    <!--根据院系id,查询对应的用户-->
+    <select id="findByFacultyId" resultMap="userMap" parameterType="int">
+        select u.id uid,u.username,u.avatar,r.id rid,r.name rname,f.id fid,f.name fname
+        from m_user u,m_role r,m_faculty f
+        where u.role_id= r.id and f.id=u.faculty_id
+        and faculty_id = #{id}
+    </select>
+
     <!--新建user用户-->
     <insert id="add" parameterType="User">
         insert into m_user(username, password, faculty_id, admin, avatar, role_id)

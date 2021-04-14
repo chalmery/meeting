@@ -1,5 +1,6 @@
 package top.yangcc.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;

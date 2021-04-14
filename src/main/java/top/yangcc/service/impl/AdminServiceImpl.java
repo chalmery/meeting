@@ -117,14 +117,18 @@ public class AdminServiceImpl implements AdminService {
     /**修改用户*/
     @Override
     public void edit(Integer id,String username,String password, String faculty, String role) {
+        System.out.println(faculty);
+        System.out.println(role);
         //查询role,faculty id
         Integer facultyId = facultyMapper.findIdByName(faculty);
-        Integer roleId = roleMapper.findIdByCode(role);
+        Integer roleId = roleMapper.findIdByName(role);
         if (facultyId !=null && roleId !=null) {
             Faculty faculty1 = new Faculty();
             faculty1.setId(facultyId);
             Role role1 = new Role();
             role1.setId(roleId);
+            System.out.println(facultyId);
+            System.out.println(roleId);
             //如果密码为空,表示不重置密码
             if (password==null || password.length()==0){
                 adminMapper.edit(new User(id, username, role1, faculty1));
@@ -143,7 +147,7 @@ public class AdminServiceImpl implements AdminService {
     public void editAdnUpload(Integer id, MultipartFile avatar, String username,String password,  String faculty, String role) throws IOException {
         //查询role,faculty id
         Integer facultyId = facultyMapper.findIdByName(faculty);
-        Integer roleId = roleMapper.findIdByCode(role);
+        Integer roleId = roleMapper.findIdByName(role);
         if (facultyId !=null && roleId !=null){
             //查询老的头像
             String oldAvatar = adminMapper.findAvatarById(id);

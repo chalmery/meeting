@@ -15,4 +15,11 @@ public interface MenuMapper {
      * @return list
      */
    List<Menu> findAllMenu();
+
+    /**
+     * 查询菜单根据用户名
+     * @param username  username
+     * @return list
+     */
+    List<Menu> findByUsername(String username);
 }

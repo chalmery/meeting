@@ -27,4 +27,6 @@ public class Menu {
     private String path;
     /** 菜单的子菜单 */
     private List<Menu> children = new ArrayList<>();
+    /** 是否需要展示 */
+    private boolean root;
 }

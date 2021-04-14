@@ -57,6 +57,12 @@ public class UserServiceImpl implements UserService {
         return new PageResult(total,list);
     }
 
+    /**查询全部的用户信息*/
+    @Override
+    public List<User> findByFacultyId(Integer id) {
+        return userMapper.findByFacultyId(id);
+    }
+
     /**查询用户是否存在*/
     @Override
     public Integer findCountByUsername(String username) {
@@ -127,7 +133,7 @@ public class UserServiceImpl implements UserService {
     public void edit(Integer id,String username,String password, String faculty, String role) {
         //查询role,faculty id
         Integer facultyId = facultyMapper.findIdByName(faculty);
-        Integer roleId = roleMapper.findIdByCode(role);
+        Integer roleId = roleMapper.findIdByName(role);
         if (facultyId !=null && roleId !=null) {
             Faculty faculty1 = new Faculty();
             faculty1.setId(facultyId);
@@ -151,7 +157,7 @@ public class UserServiceImpl implements UserService {
     public void editAdnUpload(Integer id, MultipartFile avatar, String username,String password,  String faculty, String role) throws IOException {
         //查询role,faculty id
         Integer facultyId = facultyMapper.findIdByName(faculty);
-        Integer roleId = roleMapper.findIdByCode(role);
+        Integer roleId = roleMapper.findIdByName(role);
         if (facultyId !=null && roleId !=null){
             //查询老的头像
             String oldAvatar = userMapper.findAvatarById(id);

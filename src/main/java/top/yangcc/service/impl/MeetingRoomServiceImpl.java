@@ -119,12 +119,12 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
 
     /**
      * 根据院系，查询会议室
-     * @param faculty 院系
+     * @param id 院系Id
      * @return 会议室名称
      */
     @Override
-    public List<HashMap<String,String>> findByFaculty(String faculty) {
-        return meetingRoomMapper.findByFaculty(faculty);
+    public List<MeetingRoom> findByFacultyId(Integer id) {
+        return meetingRoomMapper.findByFacultyId(id);
     }
 
     /**

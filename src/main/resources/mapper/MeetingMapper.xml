@@ -1,18 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.yangcc.mapper.MeetingMapper">
-    <!--新增会议-->
-    <insert id="add" parameterType="Meeting">
-        /*拿到插入后的id,order After意思就是先执行下面的插入，后拿到id*/
-        <selectKey resultType="Integer" order="AFTER" keyProperty="id">
-            select LAST_INSERT_ID()
-        </selectKey>
-        insert into m_meeting(name,sponsor,start,end,location,meeting_room,info,operating_time, operator)
-        values (#{name},#{sponsor},#{start},#{end},#{location},#{meetingRoom},#{info},#{operatingTime},#{operator})
-    </insert>
-    <!--设置会议,用户的中间表-->
-    <insert id="addMeetingAndUser" parameterType="Map">
-        insert into m_meeting_user(meeting_id, user_id) values (#{meeting_id},#{user_id})
-    </insert>
 
 </mapper>

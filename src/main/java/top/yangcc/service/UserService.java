@@ -1,10 +1,12 @@
 package top.yangcc.service;
 
 import org.springframework.web.multipart.MultipartFile;
+import top.yangcc.entity.User;
 import top.yangcc.response.PageResult;
 import top.yangcc.response.QueryUserPageBean;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author yangcc
@@ -17,6 +19,14 @@ public interface UserService {
      */
     PageResult findUserByCondition(QueryUserPageBean queryUserPageBean);
 
+
+
+    /**
+     * 查询所有的用户信息
+     * @param id 院系id
+     * @return User
+     */
+    List<User> findByFacultyId(Integer id);
 
     /**
      * 查询角色是否存在
@@ -76,6 +86,5 @@ public interface UserService {
      * @param id id
      */
     void delete(Integer id);
-
 
 }
