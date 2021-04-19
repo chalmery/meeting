@@ -117,27 +117,34 @@ public class AdminServiceImpl implements AdminService {
     /**修改用户*/
     @Override
     public void edit(Integer id,String username,String password, String faculty, String role) {
-        System.out.println(faculty);
-        System.out.println(role);
         //查询role,faculty id
         Integer facultyId = facultyMapper.findIdByName(faculty);
-        Integer roleId = roleMapper.findIdByName(role);
+        Integer roleId = roleMapper.findIdByCode(role);
         if (facultyId !=null && roleId !=null) {
             Faculty faculty1 = new Faculty();
             faculty1.setId(facultyId);
             Role role1 = new Role();
             role1.setId(roleId);
-            System.out.println(facultyId);
-            System.out.println(roleId);
             //如果密码为空,表示不重置密码
             if (password==null || password.length()==0){
-                adminMapper.edit(new User(id, username, role1, faculty1));
+                User user = new User();
+                user.setId(id);
+                user.setUsername(username);
+                user.setRole(role1);
+                user.setFaculty(faculty1);
+                adminMapper.edit(user);
             }
             //否则重置密码
             else {
                 //加密
                 String encrypt = Md5Utils.encrypt(password);
-                adminMapper.edit(new User(id, username,encrypt, role1, faculty1));
+                User user = new User();
+                user.setId(id);
+                user.setUsername(username);
+                user.setPassword(encrypt);
+                user.setRole(role1);
+                user.setFaculty(faculty1);
+                adminMapper.edit(user);
             }
         }
     }
@@ -147,7 +154,7 @@ public class AdminServiceImpl implements AdminService {
     public void editAdnUpload(Integer id, MultipartFile avatar, String username,String password,  String faculty, String role) throws IOException {
         //查询role,faculty id
         Integer facultyId = facultyMapper.findIdByName(faculty);
-        Integer roleId = roleMapper.findIdByName(role);
+        Integer roleId = roleMapper.findIdByCode(role);
         if (facultyId !=null && roleId !=null){
             //查询老的头像
             String oldAvatar = adminMapper.findAvatarById(id);
@@ -165,9 +172,27 @@ public class AdminServiceImpl implements AdminService {
             faculty1.setId(facultyId);
             Role role1 = new Role();
             role1.setId(roleId);
-            User user = new User(id,avatarName, username,role1,faculty1);
-            //update
-            adminMapper.edit(user);
+            //如果修改了密码
+            if (password==null || password.length()==0){
+                User user = new User();
+                user.setId(id);
+                user.setAvatar(avatarName);
+                user.setUsername(username);
+                user.setRole(role1);
+                user.setFaculty(faculty1);
+                adminMapper.edit(user);
+            }else{
+                //加密
+                String encrypt = Md5Utils.encrypt(password);
+                User user = new User();
+                user.setId(id);
+                user.setUsername(username);
+                user.setAvatar(avatarName);
+                user.setPassword(encrypt);
+                user.setRole(role1);
+                user.setFaculty(faculty1);
+                adminMapper.edit(user);
+            }
         }
 
     }

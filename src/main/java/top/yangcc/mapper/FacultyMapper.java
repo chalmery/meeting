@@ -69,4 +69,10 @@ public interface FacultyMapper {
      */
     void delete(Integer id);
 
+    /**
+     * 查询是否为教学楼
+     * @param id id
+     * @return boolean
+     */
+    boolean findTeachById(Integer id);
 }

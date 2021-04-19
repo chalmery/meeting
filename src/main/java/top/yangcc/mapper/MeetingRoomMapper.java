@@ -51,4 +51,11 @@ public interface MeetingRoomMapper {
      * @return 会议室点location
      */
     List<MeetingRoom> findByFacultyId(Integer id);
+
+    /**
+     * 根据会议，查询会议室
+     * @param id 会议Id
+     * @return 会议室
+     */
+    MeetingRoom findByMeetingId(Integer id);
 }

@@ -1,11 +1,9 @@
 package top.yangcc.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -16,7 +14,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Meeting {
+public class Meeting  implements Serializable {
     /** 会议id */
     private Integer id;
     /** 会议名称 */
@@ -36,11 +34,17 @@ public class Meeting {
     /** 会议室 */
     private MeetingRoom meetingRoom;
     /** 操作时间 */
-    private  Date operatingTime;
+    private  String operatingTime;
     /** 操作人员 */
-    private String operator;
+    private User operator;
     /** 发起人 */
-    private String sponsor;
+    private User sponsor;
+    /** 发起时间*/
+    private  String sponsorTime;
     /** 审核状态 未审核 通过 未通过 */
     private String approvalStatus;
+    /**会议室是否冲突*/
+    private boolean conflictMeetingRoom;
+    /**用户是否冲突*/
+    private boolean conflictUser;
 }

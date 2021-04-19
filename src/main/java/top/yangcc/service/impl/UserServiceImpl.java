@@ -5,14 +5,18 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import top.yangcc.entity.Faculty;
+import top.yangcc.entity.Meeting;
 import top.yangcc.entity.Role;
 import top.yangcc.entity.User;
 
 import top.yangcc.mapper.FacultyMapper;
+import top.yangcc.mapper.MeetingMapper;
 import top.yangcc.mapper.RoleMapper;
 import top.yangcc.mapper.UserMapper;
+import top.yangcc.response.ConflictUser;
 import top.yangcc.response.PageResult;
 import top.yangcc.response.QueryUserPageBean;
 import top.yangcc.service.UserService;
@@ -20,14 +24,13 @@ import top.yangcc.utils.Md5Utils;
 import top.yangcc.utils.QiNiuUtil;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author yangcc
  */
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
@@ -35,11 +38,32 @@ public class UserServiceImpl implements UserService {
 
     private FacultyMapper facultyMapper;
 
+    private MeetingMapper meetingMapper;
+
     @Autowired
-    public UserServiceImpl(UserMapper userMapper, RoleMapper roleMapper, FacultyMapper facultyMapper) {
+    public UserServiceImpl(UserMapper userMapper, RoleMapper roleMapper, FacultyMapper facultyMapper, MeetingMapper meetingMapper) {
         this.userMapper = userMapper;
         this.roleMapper = roleMapper;
         this.facultyMapper = facultyMapper;
+        this.meetingMapper = meetingMapper;
+    }
+
+    /**
+     * 查询用户信息
+     */
+    @Override
+    public User findByUsername(String username) {
+        return userMapper.findByUsername(username);
+    }
+
+    /**
+     * 查询用户头像
+     * @param username username
+     * @return avatar
+     */
+    @Override
+    public String findAvatarByUsername(String username) {
+        return userMapper.findAvatarByUsername(username);
     }
 
     /**
@@ -60,7 +84,14 @@ public class UserServiceImpl implements UserService {
     /**查询全部的用户信息*/
     @Override
     public List<User> findByFacultyId(Integer id) {
-        return userMapper.findByFacultyId(id);
+        //根据院系id,查询该院系是否为教学楼
+        boolean isTeach= facultyMapper.findTeachById(id);
+        if (isTeach){
+            return userMapper.findByFacultyId(id);
+        }
+        else{
+           return userMapper.findAll();
+        }
     }
 
     /**查询用户是否存在*/
@@ -133,7 +164,7 @@ public class UserServiceImpl implements UserService {
     public void edit(Integer id,String username,String password, String faculty, String role) {
         //查询role,faculty id
         Integer facultyId = facultyMapper.findIdByName(faculty);
-        Integer roleId = roleMapper.findIdByName(role);
+        Integer roleId = roleMapper.findIdByCode(role);
         if (facultyId !=null && roleId !=null) {
             Faculty faculty1 = new Faculty();
             faculty1.setId(facultyId);
@@ -141,13 +172,24 @@ public class UserServiceImpl implements UserService {
             role1.setId(roleId);
             //如果密码为空,表示不重置密码
             if (password==null || password.length()==0){
-                userMapper.edit(new User(id, username, role1, faculty1));
+                User user = new User();
+                user.setId(id);
+                user.setUsername(username);
+                user.setRole(role1);
+                user.setFaculty(faculty1);
+                userMapper.edit(user);
             }
             //否则重置密码
             else {
                 //加密
                 String encrypt = Md5Utils.encrypt(password);
-                userMapper.edit(new User(id, username,encrypt, role1, faculty1));
+                User user = new User();
+                user.setId(id);
+                user.setUsername(username);
+                user.setPassword(encrypt);
+                user.setRole(role1);
+                user.setFaculty(faculty1);
+                userMapper.edit(user);
             }
         }
     }
@@ -157,7 +199,7 @@ public class UserServiceImpl implements UserService {
     public void editAdnUpload(Integer id, MultipartFile avatar, String username,String password,  String faculty, String role) throws IOException {
         //查询role,faculty id
         Integer facultyId = facultyMapper.findIdByName(faculty);
-        Integer roleId = roleMapper.findIdByName(role);
+        Integer roleId = roleMapper.findIdByCode(role);
         if (facultyId !=null && roleId !=null){
             //查询老的头像
             String oldAvatar = userMapper.findAvatarById(id);
@@ -175,9 +217,27 @@ public class UserServiceImpl implements UserService {
             faculty1.setId(facultyId);
             Role role1 = new Role();
             role1.setId(roleId);
-            User user = new User(id,avatarName, username,role1,faculty1);
-            //update
-            userMapper.edit(user);
+            //如果修改了密码
+            if (password==null || password.length()==0){
+                User user = new User();
+                user.setId(id);
+                user.setAvatar(avatarName);
+                user.setUsername(username);
+                user.setRole(role1);
+                user.setFaculty(faculty1);
+                userMapper.edit(user);
+            }else{
+                //加密
+                String encrypt = Md5Utils.encrypt(password);
+                User user = new User();
+                user.setId(id);
+                user.setUsername(username);
+                user.setAvatar(avatarName);
+                user.setPassword(encrypt);
+                user.setRole(role1);
+                user.setFaculty(faculty1);
+                userMapper.edit(user);
+            }
         }
 
     }
@@ -193,5 +253,68 @@ public class UserServiceImpl implements UserService {
         }
         //然后删除这个用户
         userMapper.delete(id);
+    }
+
+    /**修改信息*/
+    @Override
+    public void userEdit(User user) {
+        //如果没有密码表示不重置密码
+        if (user.getPassword() != null && user.getPassword().length() != 0) {
+            String encrypt = Md5Utils.encrypt(user.getPassword());
+            user.setPassword(encrypt);
+        }
+        userMapper.userEdit(user);
+    }
+
+    /**修改信息*/
+    @Override
+    public void userEditAvatar(MultipartFile avatar,Integer id) throws IOException {
+        //查询老的头像
+        String oldAvatar = userMapper.findAvatarById(id);
+        //如果老头像不是默认头像则删除
+        if (!Objects.equals(oldAvatar,"header.jpg")){
+            QiNiuUtil.delete(oldAvatar);
+        }
+        //拿到图片的后缀
+        String split = Objects.requireNonNull(avatar.getOriginalFilename()).split("\\.")[1];
+        //上传图片
+        String avatarName = UUID.randomUUID() + "." + split;
+        QiNiuUtil.upload(avatar.getBytes(), avatarName);
+        //修改
+        User user = new User();
+        user.setId(id);
+        user.setAvatar(avatarName);
+        userMapper.userEditAvatar(user);
+    }
+
+    /**查询用户信息,根据会议id*/
+    @Override
+    public List<User> findByMeetingId(Integer id) {
+        return userMapper.findByMeetingId(id);
+    }
+
+    /**查询会议冲突的用户*/
+    @Override
+    public List<ConflictUser> findByConflict(Integer id) {
+        //查询此会议对应的用户
+        List<User> users = userMapper.findByMeetingId(id);
+        //查询此id对应的会议
+        Meeting meeting = meetingMapper.findById(id);
+        //构造集合
+        List<ConflictUser> list =new ArrayList<>();
+        //会议人员是否冲突
+        for (User user : users) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("user_id",user.getId());
+            map.put("meeting_id",meeting.getId());
+            map.put("start",meeting.getStart());
+            map.put("end",meeting.getEnd());
+            //查询冲突的会议Id
+            List<Integer> meetingIds=  userMapper.findByConflict(map);
+            if (meetingIds !=null && meetingIds.size()>0){
+                list.add(new ConflictUser(user.getId(),user.getAvatar(),user.getUsername(),null,false,user.getRole(),user.getFaculty(),meetingIds));
+            }
+        }
+        return list;
     }
 }

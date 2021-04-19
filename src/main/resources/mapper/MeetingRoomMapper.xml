@@ -51,7 +51,7 @@
                 img=#{img},
             </if>
             <if test="room!=null and room.length>0">
-                location=#{location},
+                room=#{room},
             </if>
             <if test="capacity!=null">
                 capacity=#{capacity},
@@ -82,5 +82,12 @@
     <!--根据院系id查询所有的会议室信息-->
     <select id="findByFacultyId" resultType="MeetingRoom" parameterType="int">
         select * from m_meetingroom where faculty_id=#{id}
+    </select>
+
+    <!--查询会议对应的会议室信息-->
+    <select id="findByMeetingId" resultMap="MeetingRoomMap" parameterType="int">
+        select mr.*,mr.id mid,f.*,f.id fid
+        from m_meeting m,m_meetingroom mr,m_faculty f
+        where m.meetingroom_id =mr.id and f.id = mr.faculty_id and m.id = #{id}
     </select>
 </mapper>

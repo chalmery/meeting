@@ -80,13 +80,6 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
      */
     @Override
     public void edit(MeetingRoom meetingRoom) {
-        //查询此院系名称对应的院系id
-        Integer facultyId = facultyMapper.findIdByName(meetingRoom.getFaculty().getName());
-        //保存
-        Faculty faculty = meetingRoom.getFaculty();
-        faculty.setId(facultyId);
-        meetingRoom.setFaculty(faculty);
-        //修改
         meetingRoomMapper.edit(meetingRoom);
     }
 
@@ -117,14 +110,16 @@ public class MeetingRoomServiceImpl implements MeetingRoomService {
         meetingRoomMapper.edit(meetingRoom);
     }
 
-    /**
-     * 根据院系，查询会议室
-     * @param id 院系Id
-     * @return 会议室名称
-     */
+    /**根据院系，查询会议室*/
     @Override
     public List<MeetingRoom> findByFacultyId(Integer id) {
         return meetingRoomMapper.findByFacultyId(id);
+    }
+
+    /**根据会议id，查询会议室*/
+    @Override
+    public MeetingRoom findByMeetingId(Integer id) {
+        return meetingRoomMapper.findByMeetingId(id);
     }
 
     /**

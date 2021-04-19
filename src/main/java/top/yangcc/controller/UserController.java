@@ -4,7 +4,9 @@ package top.yangcc.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import top.yangcc.entity.Faculty;
 import top.yangcc.request.User;
+import top.yangcc.response.ConflictUser;
 import top.yangcc.response.PageResult;
 import top.yangcc.response.QueryUserPageBean;
 import top.yangcc.response.Result;
@@ -28,6 +30,30 @@ public class UserController {
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+
+    /** 查询用户头像,根据用户名 */
+    @RequestMapping("/findAvatarByUsername/{username}")
+    public Result findAvatarByUsername(@PathVariable String username){
+        try {
+            String avatar =  userService.findAvatarByUsername(username);
+            return Result.success("成功",avatar);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("获取头像失败");
+        }
+    }
+
+    /** 查询用户信息,根据用户名*/
+    @RequestMapping("/findByUsername/{username}")
+    public Result findByUsername(@PathVariable String username){
+        try {
+            top.yangcc.entity.User user = userService.findByUsername(username);
+            return Result.success(user);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("查询用户信息失败");
+        }
     }
 
     /** 查询所有的用户信息,根据院系id */
@@ -121,5 +147,50 @@ public class UserController {
         }
     }
 
+    /**用户自定义修改,不带头像*/
+    @RequestMapping("/userEdit")
+    public Result userEdit(@RequestBody top.yangcc.entity.User user){
+        try {
+            userService.userEdit(user);
+            return Result.success("修改成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("修改失败");
+        }
+    }
+    /** 用户自定义修改头像 */
+    @RequestMapping("/userEditAvatar")
+    public Result userEditAvatar(MultipartFile file,Integer id){
+        try {
+            userService.userEditAvatar(file,id);
+            return Result.success("修改成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("修改失败");
+        }
+    }
 
+    /**查询会议对应的用户信息*/
+    @RequestMapping("/findByMeetingId/{id}")
+    public Result findByMeetingId(@PathVariable Integer id){
+        try {
+            List<top.yangcc.entity.User> users = userService.findByMeetingId(id);
+            return Result.success(users);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("查询失败");
+        }
+    }
+
+    /**查询会议冲突的用户*/
+    @RequestMapping("/findByConflict/{id}")
+    public Result findByConflict(@PathVariable Integer id){
+        try {
+            List<ConflictUser> users = userService.findByConflict(id);
+            return Result.success(users);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("查询失败");
+        }
+    }
 }

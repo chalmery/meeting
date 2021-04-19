@@ -14,9 +14,9 @@ import top.yangcc.entity.MeetingRoom;
 import top.yangcc.service.MeetingRoomService;
 import top.yangcc.utils.PictureVerify;
 
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
+
 
 /**
  * 会议室相关的controller
@@ -75,6 +75,7 @@ public class MeetingRoomController {
      */
     @RequestMapping("/edit")
     public Result edit(@RequestBody MeetingRoom meetingRoom){
+
         try {
             meetingRoomService.edit(meetingRoom);
             return Result.success("修改会议室信息成功");
@@ -127,6 +128,20 @@ public class MeetingRoomController {
     public Result findByFaculty(@PathVariable Integer id){
         try {
             List<MeetingRoom> meetingRoom = meetingRoomService.findByFacultyId(id);
+            return Result.success(meetingRoom);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("查询失败");
+        }
+    }
+
+    /**
+     * 根据会议id,查询会议室信息
+     */
+    @RequestMapping("/findByMeetingId/{id}")
+    public Result findByMeetingId(@PathVariable Integer id){
+        try {
+            MeetingRoom meetingRoom = meetingRoomService.findByMeetingId(id);
             return Result.success(meetingRoom);
         } catch (Exception e) {
             e.printStackTrace();

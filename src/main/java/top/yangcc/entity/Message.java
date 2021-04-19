@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -13,13 +14,18 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Message {
+public class Message  implements Serializable {
     /** 消息的id */
     private Integer id;
     /** 消息的发送时间 */
-    private Date sendTime;
+    private String sendTime;
     /** 消息的内容 */
     private String content;
-    /** 收信人的id*/
-    private Integer userId;
+    /** 收信人*/
+    private User addressee;
+    /** 此消息对应的会议*/
+    private Meeting meeting;
+    /** 是否已读 */
+    private boolean read;
+
 }

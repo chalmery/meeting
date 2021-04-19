@@ -14,6 +14,21 @@ import java.util.Map;
  */
 @Repository
 public interface UserMapper {
+
+    /**
+     * 查询用户信息
+     * @param username username
+     * @return User
+     */
+    User findByUsername(String username);
+
+    /**
+     * 查询用户头像
+     * @param username username
+     * @return avatar
+     */
+    String findAvatarByUsername(String username);
+
     /**
      * 查询所有的管理员用户信息
      * @param user 查询条件
@@ -28,6 +43,11 @@ public interface UserMapper {
      */
     Role findRoleByUserId(Integer uid);
 
+    /**
+     * 查询全部
+     * @return list
+     */
+    List<User> findAll();
 
     /**
      * 查询所有的用户信息
@@ -75,4 +95,37 @@ public interface UserMapper {
      */
     void delete(Integer id);
 
+    /**
+     * 修改信息
+     * @param user user
+     */
+    void userEdit(User user);
+
+
+    void userEditAvatar(User user);
+
+
+    /**
+     * 根据会议id查询用户信息
+     * @param id 会议id
+     * @return users
+     */
+    List<User> findByMeetingId(Integer id);
+
+    /**
+     * 查询冲突的会议列表
+     * @param map map
+     * @return list
+     */
+    List<Integer> findByConflict(Map<String, Object> map);
+
+    /**查询全部的用户信息*/
+    List<User> findAllUser();
+
+    /**
+     * 查询此消息对应的收件人
+     * @param id 消息id
+     * @return user
+     */
+    User findByMessageId(Integer id);
 }

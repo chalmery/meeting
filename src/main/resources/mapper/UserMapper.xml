@@ -63,6 +63,25 @@
         and faculty_id = #{id}
     </select>
 
+    <!--查询用户头像-->
+    <select id="findAvatarByUsername" resultType="String" parameterType="String">
+        select avatar from m_user where username = #{username}
+    </select>
+
+    <!--查询用户信息-->
+    <select id="findByUsername" resultMap="userMap" parameterType="String">
+        select u.id uid, u.username,u.avatar,f.id fid,f.name fname
+        from m_user u ,m_faculty f
+        where u.faculty_id =f.id and u.username = #{username}
+    </select>
+
+    <!--查询全部-->
+    <select id="findAll" resultMap="userMap">
+        select  u.id uid,u.username,u.avatar,r.id rid,r.name rname,f.id fid,f.name fname
+        from m_user u,m_role r,m_faculty f
+        where u.role_id= r.id and f.id=u.faculty_id
+    </select>
+
     <!--新建user用户-->
     <insert id="add" parameterType="User">
         insert into m_user(username, password, faculty_id, admin, avatar, role_id)
@@ -74,13 +93,13 @@
     <update id="edit" parameterType="User">
         update m_user
         <set>
-            <if test="username !=null">
+            <if test="username !=null and username.length>0">
                 username =#{username},
             </if>
-            <if test="password !=null">
+            <if test="password !=null and password.length>0">
                 password= #{password},
             </if>
-            <if test="avatar !=null">
+            <if test="avatar !=null and avatar.length>0">
                 avatar = #{avatar},
             </if>
             role_id = #{role.id},
@@ -93,4 +112,67 @@
     <delete id="delete" parameterType="int">
         delete from m_user where id=#{id}
     </delete>
+
+
+    <update id="userEdit" parameterType="User">
+        update m_user
+        <set>
+            <if test="username !=null and username.length>0">
+                username =#{username},
+            </if>
+            <if test="password !=null and password.length>0">
+                password= #{password},
+            </if>
+            <if test="avatar !=null and avatar.length>0">
+                avatar = #{avatar},
+            </if>
+            faculty_id = #{faculty.id}
+        </set>
+        where id =#{id}
+    </update>
+
+    <update id="userEditAvatar" parameterType="User">
+        update m_user
+        <set>
+            <if test="avatar !=null and avatar.length>0">
+                avatar = #{avatar},
+            </if>
+        </set>
+        where id =#{id}
+    </update>
+
+
+    <!--根据会议id查询用户信息-->
+    <select id="findByMeetingId" resultMap="userMap" parameterType="int">
+        select u.id uid, u.username,u.avatar,
+               f.id fid,f.name fname,
+               r.id rid,r.name rname,r.code
+        from m_user u ,m_faculty f,m_role r,m_meeting_user mu
+        where u.faculty_id =f.id and u.role_id = r.id and mu.user_id = u.id
+                and mu.meeting_id = #{id}
+        order by u.id
+    </select>
+
+    <!--查询此用户冲突的会议列表ID-->
+    <select id="findByConflict" resultType="int" parameterType="map">
+        select m.id
+        from m_meeting m,m_meeting_user mu,m_user u
+        where m.id = mu.meeting_id and u.id = mu.user_id
+          and approval_status != '审核未通过'
+          and u.id=#{user_id} and m.id!=#{meeting_id} and (#{start} BETWEEN m.start AND m.end
+            OR #{end} BETWEEN m.start AND m.end
+            OR m.start BETWEEN #{start} AND #{end}
+            OR m.end BETWEEN #{start} AND #{end})
+    </select>
+
+
+    <!--查询用户信息,根据消息id-->
+    <select id="findByMessageId" resultMap="userMap" parameterType="int">
+        select u.id uid, u.username,u.avatar,
+               f.id fid,f.name fname,
+               r.id rid,r.name rname,r.code
+        from m_user u ,m_faculty f,m_role r,m_message me
+        where u.faculty_id =f.id and u.role_id = r.id and me.addressee = u.id
+          and me.id=#{id}
+    </select>
 </mapper>

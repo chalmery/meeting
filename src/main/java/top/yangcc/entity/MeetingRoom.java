@@ -2,6 +2,8 @@ package top.yangcc.entity;
 
 import lombok.*;
 
+import java.io.Serializable;
+
 /**
  * 会议室Bean
  * @author yangcc
@@ -9,8 +11,8 @@ import lombok.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MeetingRoom {
-    /** 表的id */
+public class MeetingRoom implements Serializable{
+        /** 表的id */
     private Integer id;
     /** 图片的路径 */
     private String img;

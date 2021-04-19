@@ -11,6 +11,10 @@
         select * from m_faculty
     </select>
 
+    <!--是否为教学楼-->
+    <select id="findTeachById" resultType="boolean" parameterType="int">
+        select teach from m_faculty where id=#{id}
+    </select>
     <!--条件查询-->
     <select id="findByCondition" parameterType="String" resultType="Faculty">
         select * from m_faculty where

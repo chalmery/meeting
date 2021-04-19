@@ -1,7 +1,9 @@
 package top.yangcc.service;
 
 import org.springframework.web.multipart.MultipartFile;
+import top.yangcc.entity.Faculty;
 import top.yangcc.entity.User;
+import top.yangcc.response.ConflictUser;
 import top.yangcc.response.PageResult;
 import top.yangcc.response.QueryUserPageBean;
 
@@ -12,14 +14,28 @@ import java.util.List;
  * @author yangcc
  */
 public interface UserService {
+
+
+    /**
+     * 查询用户信息
+     * @param username username
+     * @return User
+     */
+    User findByUsername(String username);
+
+    /**
+     * 查询用户头像
+     * @param username username
+     * @return avatar
+     */
+    String findAvatarByUsername(String username);
+
     /**
      * 查询所有的管理员用户信息
      * @param queryUserPageBean 查询条件
      * @return User
      */
     PageResult findUserByCondition(QueryUserPageBean queryUserPageBean);
-
-
 
     /**
      * 查询所有的用户信息
@@ -87,4 +103,31 @@ public interface UserService {
      */
     void delete(Integer id);
 
+
+    /**
+     * 用户自定义的修改信息
+     * @param user user
+     */
+    void userEdit(User user);
+
+    /**
+     * 用户自定义的修改信息
+     * @param avatar avatar
+     * @param id id
+     */
+    void userEditAvatar(MultipartFile avatar,Integer id) throws IOException;
+
+    /**
+     * 根据会议id查询用户信息
+     * @param id id
+     * @return users
+     */
+    List<User> findByMeetingId(Integer id);
+
+    /**
+     * 查询会议冲突的用户
+     * @param id meetingId
+     * @return list
+     */
+    List<ConflictUser> findByConflict(Integer id);
 }

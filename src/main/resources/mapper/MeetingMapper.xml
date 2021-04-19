@@ -1,5 +1,278 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="top.yangcc.mapper.MeetingMapper">
+    <!--meetingMap-->
+    <resultMap id="meetingMap" type="Meeting">
+        <id column="mid" property="id"/>
+        <result column="name" property="name"/>
+        <result column="start" property="start"/>
+        <result column="end" property="end"/>
+        <result column="info" property="info"/>
+        <result column="status" property="status"/>
+        <result column="operating_time" property="operatingTime"/>
+        <result column="approval_status" property="approvalStatus"/>
+        <result column="status_status" property="statusStatus"/>
+        <result column="sponsor_time" property="sponsorTime"/>
+        <result column="conflict_meetingroom" property="conflictMeetingRoom"/>
+        <result column="conflict_user" property="conflictUser"/>
+        <!--发起人信息-->
+        <collection property="sponsor" ofType="User">
+            <id column="sid" property="id"/>
+            <result column="susername" property="username"/>
+        </collection>
+    </resultMap>
 
+
+
+    <!--根据会议id查询会议信息-->
+    <select id="findById" resultType="Meeting" parameterType="int">
+        select * from m_meeting where id=#{id}
+    </select>
+
+    <!--新增会议-->
+    <insert id="add" parameterType="Meeting">
+        <selectKey resultType="Integer" order="AFTER" keyProperty="id">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into m_meeting(name, info, start, end, status, meetingroom_id, approval_status, sponsor,sponsor_time,conflict_user,conflict_meetingroom)
+        values (#{name}, #{info}, #{start}, #{end}, #{status}, #{meetingRoom.id}, #{approvalStatus}, #{sponsor.id},#{sponsorTime},#{conflictUser},#{conflictMeetingRoom})
+    </insert>
+
+    <!--新增中间关系表-->
+    <insert id="addMeetingAndUser" parameterType="map">
+        insert into m_meeting_user(meeting_id, user_id)
+        values (#{meeting_id},#{user_id})
+    </insert>
+
+    <!--修改会议的审核状态,以及审核人信息,审核时间-->
+    <update id="editApprovalStatus" parameterType="Meeting">
+        update m_meeting
+        set approval_status =#{approvalStatus},
+            operator =#{operator.id},
+            operating_time=#{operatingTime}
+        where id = #{id}
+    </update>
+
+    <!--审核页分查询-->
+    <select id="findPageByVerify" resultMap="meetingMap" parameterType="Meeting">
+        select m.*,m.id mid,u.id sid,u.username susername
+        from m_meeting m,m_user u
+        where  m.sponsor = u.id  and approval_status = '未审核'
+        <if test="id !=null">
+            and m.id = #{id}
+        </if>
+        <if test="name !=null and name.length>0">
+            and m.name like concat(#{name},'%')
+        </if>
+        <if test="sponsor.username !=null and sponsor.username.length>0">
+            and u.username like concat(#{sponsor.username},'%')
+        </if>
+    </select>
+
+    <!--审核历史页分查询-->
+    <select id="findPageByVerifyHistory" resultMap="meetingMap" parameterType="Meeting">
+        select m.*,m.id mid,u.id sid,u.username susername
+        from m_meeting m,m_user u
+        where  m.sponsor = u.id  and approval_status != '未审核'
+        <if test="id !=null">
+            and m.id = #{id}
+        </if>
+        <if test="name !=null and name.length>0">
+            and m.name like concat(#{name},'%')
+        </if>
+        <if test="sponsor.username !=null and sponsor.username.length>0">
+            and u.username like concat(#{sponsor.username},'%')
+        </if>
+    </select>
+
+    <!--正在进行页分查询-->
+    <select id="findPageByOngoing" resultMap="meetingMap" parameterType="Meeting">
+        select m.*,m.id mid,u.id sid,u.username susername
+        from m_meeting m,m_user u
+        where  m.sponsor = u.id  and m.status = '正在进行'
+        <if test="id !=null">
+            and m.id = #{id}
+        </if>
+        <if test="name !=null and name.length>0">
+            and m.name like concat(#{name},'%')
+        </if>
+        <if test="sponsor.username !=null and sponsor.username.length>0">
+            and u.username like concat(#{sponsor.username},'%')
+        </if>
+    </select>
+
+    <!--会议历史页分查询-->
+    <select id="findPageByHistory" resultMap="meetingMap" parameterType="Meeting">
+        select m.*,m.id mid,u.id sid,u.username susername
+        from m_meeting m,m_user u
+        where  m.sponsor = u.id  and m.status = '已经结束'
+        <if test="id !=null">
+            and m.id = #{id}
+        </if>
+        <if test="name !=null and name.length>0">
+            and m.name like concat(#{name},'%')
+        </if>
+        <if test="sponsor.username !=null and sponsor.username.length>0">
+            and u.username like concat(#{sponsor.username},'%')
+        </if>
+    </select>
+
+
+    <!--申请历史页分查询-->
+    <select id="findPageByApply" resultMap="meetingMap" parameterType="Meeting">
+        select m.*,m.id mid,u.id sid,u.username susername
+        from m_meeting m,m_user u
+        where  m.sponsor = u.id
+        <if test="id !=null">
+            and m.id = #{id}
+        </if>
+        <if test="name !=null and name.length>0">
+            and m.name like concat(#{name},'%')
+        </if>
+        and u.username = #{sponsor.username}
+    </select>
+
+
+
+    <!--查询会议室是否冲突-->
+    <select id="isConflictforMeetingRoom" resultType="int" parameterType="Meeting">
+        select count(m.id)
+        from m_faculty f,m_meeting m,m_meetingroom mr
+        where f.id = mr.faculty_id and m.meetingroom_id = mr.id
+          and approval_status != '审核未通过'
+          and m.id!=#{id}
+          and mr.id = #{meetingRoom.id}
+          and (#{start} BETWEEN m.start AND m.end
+            OR #{end} BETWEEN m.start AND m.end
+            OR m.start BETWEEN #{start} AND #{end}
+            OR m.end BETWEEN #{start} AND #{end})
+    </select>
+
+    <!--查询人员是否冲突-->
+    <select id="isConflictforUser" parameterType="map" resultType="int">
+        select count(u.id)
+        from m_meeting m,m_meeting_user mu,m_user u
+        where m.id = mu.meeting_id and u.id = mu.user_id
+          and approval_status != '审核未通过'
+          and u.id=#{user_id}
+          and (#{start} BETWEEN m.start AND m.end
+            OR #{end} BETWEEN m.start AND m.end
+            OR m.start BETWEEN #{start} AND #{end}
+            OR m.end BETWEEN  #{start} AND #{end})
+    </select>
+
+    <!--查询人员是否冲突,在分页查询的时候-->
+    <select id="isConflictforUserAndFindPage" parameterType="map" resultType="int">
+        select count(u.id)
+        from m_meeting m,m_meeting_user mu,m_user u
+        where m.id = mu.meeting_id and u.id = mu.user_id
+          and approval_status != '审核未通过'
+          and u.id=#{user_id} and m.id!=#{meeting_id}
+          and (#{start} BETWEEN m.start AND m.end
+            OR #{end} BETWEEN m.start AND m.end
+            OR m.start BETWEEN #{start} AND #{end}
+            OR m.end BETWEEN  #{start} AND #{end})
+    </select>
+
+
+    <!--查询冲突会议-->
+    <select id="findByConflict" parameterType="Meeting" resultMap="meetingMap">
+        select m.*,m.id mid,u.id sid,u.username susername
+        from m_faculty f,m_meeting m,m_meetingroom mr,m_user u
+        where f.id = mr.faculty_id and m.meetingroom_id = mr.id
+          and approval_status != '审核未通过' and m.sponsor = u.id
+          and m.id !=#{id} and mr.id = #{meetingRoom.id}
+          and (#{start} BETWEEN m.start AND m.end
+            OR #{end} BETWEEN m.start AND m.end
+            OR m.start BETWEEN #{start} AND #{end}
+            OR m.end BETWEEN #{start} AND #{end})
+    </select>
+
+
+    <!--查询冲突会议-->
+    <select id="findByConflictUser" parameterType="Meeting" resultMap="meetingMap">
+        select m.*,m.id mid
+        from m_meeting m,m_meeting_user mu,m_user u
+        where m.id = mu.meeting_id and u.id = mu.user_id
+          and approval_status != '审核未通过'
+          and u.id=#{user_id}
+          and m.id!=#{meeting_id}
+          and (#{start} BETWEEN m.start AND m.end
+            OR #{end} BETWEEN m.start AND m.end
+            OR m.start BETWEEN #{start} AND #{end}
+            OR m.end BETWEEN  #{start} AND #{end})
+    </select>
+
+
+    <!--用户会议历史页分页查询-->
+    <select id="findPageByUserHistory" resultMap="meetingMap" parameterType="Meeting">
+        select m.*,m.id mid,u.id sid,u.username susername
+        from m_meeting m,m_user u
+        where  m.sponsor = u.id
+        <if test="id !=null">
+            and m.id = #{id}
+        </if>
+        <if test="name !=null and name.length>0">
+            and m.name like concat(#{name},'%')
+        </if>
+        and u.username = #{sponsor.username}
+        and m.status !='未开始'
+        and m.approval_status = '审核通过'
+    </select>
+
+    <!--将要参加的会议-->
+    <select id="findPageByFuture" resultMap="meetingMap" parameterType="Meeting">
+        select m.*,m.id mid,u.id sid,u.username susername
+        from m_meeting m,m_user u
+        where  m.sponsor = u.id
+        <if test="id !=null">
+            and m.id = #{id}
+        </if>
+        <if test="name !=null and name.length>0">
+            and m.name like concat(#{name},'%')
+        </if>
+        and u.username = #{sponsor.username}
+        and m.status ='未开始'
+        and m.approval_status = '审核通过'
+    </select>
+
+
+    <!--查询消息对应的会议-->
+    <select id="findByMessageId" resultMap="meetingMap" parameterType="int">
+        select m.*,m.id mid,u.id sid,u.username susername
+        from m_meeting m,m_user u,m_message me
+        where  m.sponsor = u.id and me.meeting_id = m.id
+        and me.id = #{id}
+    </select>
+
+
+    <!--修改冲突状态-->
+    <update id="editConflictforMeetingRoom" parameterType="map">
+        update  m_meeting set conflict_meetingroom = #{conflict_meetingroom}
+        where id =#{meeting_id}
+    </update>
+
+    <!--修改冲突状态-->
+    <update id="editConflictforUser" parameterType="map">
+        update  m_meeting set conflict_user = #{conflict_user}
+        where id =#{meeting_id}
+    </update>
+
+
+    <!--查询申请人信息-->
+    <select id="findSponsorById" resultType="int" parameterType="int">
+        select u.id from m_user u ,m_meeting m
+        where m.sponsor =  u.id and m.id = #{id}
+    </select>
+
+
+    <update id="editStatus" parameterType="Meeting">
+        update m_meeting set status =#{status}
+        where id=#{id}
+    </update>
+
+    <!--查询会议室状态-->
+    <select id="findStatusById" parameterType="int" resultType="string">
+        select status from m_meeting where id=#{id}
+    </select>
 </mapper>
