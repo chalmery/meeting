@@ -180,7 +180,15 @@ public class MeetingServiceImpl implements MeetingService {
                         message.getMessageProperties().setExpiration(end-now+ "");
                         return message;
                     });
+
+            //查询会议对应的申请人
+            Integer sId = meetingMapper.findSponsorById(meeting.getId());
+            User user1 = new User();
+            user1.setId(sId);
+            meeting.setSponsor(user1);
             //发送消息
+            String content = "您申请的会议成功通过审核";
+            sendMessage(meeting.getId(),meeting.getSponsor().getId(),nowTime,content);
         }
         //否则表示,这个会议审核的时间太晚了,同样表示未通过审核
         else {
