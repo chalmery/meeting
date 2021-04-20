@@ -1,6 +1,7 @@
 package top.yangcc.controller;
 
 import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,9 +14,11 @@ import java.util.List;
 
 /**
  * 菜单controller
+ * 只有登陆后才可访问,
  * @author yangcc
  */
 @RestController
+@SaCheckLogin
 @RequestMapping("/menu")
 public class MenuController {
 
@@ -28,10 +31,10 @@ public class MenuController {
 
     /**
      * 获取全部的菜单
-     * 只有登陆后才可访问
+     * 能够访问角色列表才能访问
      */
-
     @RequestMapping("/findAllMenu")
+    @SaCheckPermission("role")
     public Result findAllMenu(){
         try {
             List<Menu> allMenu = menuService.findAllMenu();
@@ -44,7 +47,6 @@ public class MenuController {
     /**
      * 获取此用户对应的菜单
      */
-    @SaCheckLogin
     @RequestMapping("/findByUsername/{username}")
     public Result findByUsername(@PathVariable String username){
         try {

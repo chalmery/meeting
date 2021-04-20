@@ -1,5 +1,8 @@
 package top.yangcc.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +22,7 @@ import java.util.List;
  * @author yangcc
  */
 @RestController
+@SaCheckLogin
 @RequestMapping("/faculty")
 public class FacultyController {
 
@@ -36,6 +40,7 @@ public class FacultyController {
      * 查询学院信息
      */
     @RequestMapping("/findFacultyNameForTeach")
+    @SaCheckPermission(value = {"user","admin"},mode = SaMode.OR)
     public Result findFacultyNameForTeach(){
         try {
             List<String> facultyNameForTeach = facultyService.findFacultyNameForTeach();
@@ -48,6 +53,7 @@ public class FacultyController {
      * 查询全部楼信息
      */
     @RequestMapping("/findAll")
+    @SaCheckPermission(value = {"meetingRoom","apply"},mode = SaMode.OR)
     public Result findAll(){
         try {
             List<Faculty> facultyNameForTeach = facultyService.findAll();
@@ -64,6 +70,7 @@ public class FacultyController {
      * @return 返回分页信息
      */
     @RequestMapping("/findPage")
+    @SaCheckPermission("faculty")
     public PageResult findPage(@RequestBody QueryPageBean queryPageBean){
         try {
             return facultyService.findPage(queryPageBean);
@@ -79,6 +86,7 @@ public class FacultyController {
      * @return 前后端统一的返回
      */
     @RequestMapping("/add")
+    @SaCheckPermission("faculty")
     public Result add(@RequestBody Faculty faculty){
         try {
             facultyService.add(faculty);
@@ -95,6 +103,7 @@ public class FacultyController {
      * @return 统一的返回
      */
     @RequestMapping("/edit")
+    @SaCheckPermission("faculty")
     public Result edit(@RequestBody Faculty faculty){
         System.out.println(faculty);
         try {
@@ -113,6 +122,7 @@ public class FacultyController {
      * @return 是否成功
      */
     @RequestMapping("/delete/{id}")
+    @SaCheckPermission("faculty")
     public Result delete(@PathVariable Integer id){
         try {
             //查询用户个数

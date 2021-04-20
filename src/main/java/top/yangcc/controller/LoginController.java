@@ -1,6 +1,6 @@
 package top.yangcc.controller;
 
-import cn.dev33.satoken.stp.StpUtil;
+
 import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
@@ -13,6 +13,7 @@ import top.yangcc.response.Result;
 import top.yangcc.service.LoginService;
 
 /**
+ * 开放登录controller,不需要权限即可访问
  * @author yangcc
  */
 @RestController

@@ -1,5 +1,7 @@
 package top.yangcc.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +26,7 @@ import java.util.Map;
  * @author yangcc
  */
 @RestController
+@SaCheckLogin
 @RequestMapping("/message")
 public class MessageController {
     private MessageService messageService;
@@ -35,6 +38,7 @@ public class MessageController {
 
     /** 分页查询 */
     @RequestMapping("/findPage")
+    @SaCheckPermission("message")
     public Result findPage(@RequestBody QueryMessagePageBean queryMessagePageBean){
         try {
             PageResult pageResult = messageService.findPage(queryMessagePageBean);
@@ -47,6 +51,7 @@ public class MessageController {
 
     /**查询消息详情*/
     @RequestMapping("/findDetail/{id}")
+    @SaCheckPermission("message")
     public Result findDetail(@PathVariable Integer id){
         try {
             Map<String,Object> map  = messageService.findDetail(id);
@@ -59,6 +64,7 @@ public class MessageController {
 
     /**修改*/
     @RequestMapping("/edit/{id}")
+    @SaCheckPermission("message")
     public Result edit(@PathVariable Integer id,@RequestBody String content){
         try {
             messageService.edit(id,content);
@@ -69,8 +75,9 @@ public class MessageController {
         }
     }
 
-    /**查询用户的消息列表*/
+    /**查询消息列表*/
     @RequestMapping("/findPageByUser")
+    @SaCheckPermission("myMessage")
     public Result findPageByUser(@RequestBody QueryMessagePageBean queryMessagePageBean){
         try {
             PageResult pageResult = messageService.findPageByUser(queryMessagePageBean);
@@ -92,7 +99,7 @@ public class MessageController {
         }
     }
 
-    /**查看全部已读消息*/
+    /**查看未读消息*/
     @RequestMapping("/findAllReadMessage/{username}")
     public Result findAllReadMessage(@PathVariable String username){
         try {
@@ -113,7 +120,4 @@ public class MessageController {
             e.printStackTrace();
         }
     }
-
-
-
 }

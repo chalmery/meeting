@@ -22,11 +22,35 @@
         </collection>
     </resultMap>
 
+    <!--meetingMap-->
+    <resultMap id="myMeetingMap" type="Meeting">
+        <id column="mid" property="id"/>
+        <result column="name" property="name"/>
+        <result column="start" property="start"/>
+        <result column="end" property="end"/>
+        <!--会议室信息-->
+        <collection property="meetingRoom" ofType="MeetingRoom">
+            <id column="mrid" property="id"/>
+            <result column="room" property="room"/>
+            <collection property="faculty" ofType="Faculty">
+                <id column="fid" property="id"/>
+                <result column="location" property="location"/>
+            </collection>
+        </collection>
+    </resultMap>
+
 
 
     <!--根据会议id查询会议信息-->
     <select id="findById" resultType="Meeting" parameterType="int">
         select * from m_meeting where id=#{id}
+    </select>
+
+
+    <select id="findAllById" resultMap="meetingMap" parameterType="int">
+        select m.*,m.id mid,u.id sid,u.username susername
+        from m_meeting m,m_user u
+        where  m.sponsor = u.id and m.id = #{id}
     </select>
 
     <!--新增会议-->
@@ -205,34 +229,33 @@
 
 
     <!--用户会议历史页分页查询-->
-    <select id="findPageByUserHistory" resultMap="meetingMap" parameterType="Meeting">
-        select m.*,m.id mid,u.id sid,u.username susername
-        from m_meeting m,m_user u
-        where  m.sponsor = u.id
-        <if test="id !=null">
-            and m.id = #{id}
+    <select id="findPageByUserHistory" resultType="int" parameterType="map">
+        select m.id
+        from m_meeting m,m_user u,m_meeting_user mu
+        where  m.id = mu.meeting_id and u.id = mu.user_id
+        <if test="meeting.id !=null">
+            and m.id = #{meeting.id}
         </if>
-        <if test="name !=null and name.length>0">
-            and m.name like concat(#{name},'%')
+        <if test="meeting.name !=null and meeting.name.length>0">
+            and m.name like concat(#{meeting.name},'%')
         </if>
-        and u.username = #{sponsor.username}
-        and m.status !='未开始'
-        and m.approval_status = '审核通过'
+        and u.username = #{username}
+        and m.status ='已经结束'
     </select>
 
     <!--将要参加的会议-->
-    <select id="findPageByFuture" resultMap="meetingMap" parameterType="Meeting">
-        select m.*,m.id mid,u.id sid,u.username susername
-        from m_meeting m,m_user u
-        where  m.sponsor = u.id
-        <if test="id !=null">
-            and m.id = #{id}
+    <select id="findPageByFuture" resultType="int" parameterType="map">
+        select m.id
+        from m_meeting m,m_user u,m_meeting_user mu
+        where  m.id = mu.meeting_id and u.id = mu.user_id
+        <if test="meeting.id !=null">
+            and m.id = #{meeting.id}
         </if>
-        <if test="name !=null and name.length>0">
-            and m.name like concat(#{name},'%')
+        <if test="meeting.name !=null and meeting.name.length>0">
+            and m.name like concat(#{meeting.name},'%')
         </if>
-        and u.username = #{sponsor.username}
-        and m.status ='未开始'
+        and u.username = #{username}
+        and m.status !='已经结束'
         and m.approval_status = '审核通过'
     </select>
 
@@ -274,5 +297,16 @@
     <!--查询会议室状态-->
     <select id="findStatusById" parameterType="int" resultType="string">
         select status from m_meeting where id=#{id}
+    </select>
+
+
+    <!--查询全部要参加的会议-->
+    <select id="findAllFutureByUsername" resultMap="myMeetingMap" parameterType="string">
+        select *,m.id mid,mr.id mrid, f.id fid
+        from m_meeting m,m_meetingroom mr,m_faculty f,m_meeting_user mu,m_user u
+        where m.meetingroom_id = mr.id and mr.faculty_id = f.id and mu.meeting_id = m.id
+        and u.id = mu.user_id
+        and m.approval_status = '审核通过' and m.status != '已经结束'
+        and u.username= #{username}
     </select>
 </mapper>

@@ -1,5 +1,8 @@
 package top.yangcc.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +26,7 @@ import java.util.List;
  * @author yangcc
  */
 @RestController
+@SaCheckLogin
 @RequestMapping("/meetingRoom")
 public class MeetingRoomController {
 
@@ -38,6 +42,7 @@ public class MeetingRoomController {
      * @return 是否成功
      */
     @RequestMapping("/upload")
+    @SaCheckPermission("meetingRoom")
     public Result upload(MultipartFile file,String info, String room,Integer capacity,String status,String name,String faculty){
         try {
             //判断文件格式
@@ -59,6 +64,7 @@ public class MeetingRoomController {
      * @return 返回分页信息
      */
     @RequestMapping("/findPage")
+    @SaCheckPermission("meetingRoom")
     public PageResult findPage(@RequestBody QueryMeetingRoomPageBean queryPageBean){
         try {
             return meetingRoomService.findPage(queryPageBean);
@@ -74,6 +80,7 @@ public class MeetingRoomController {
      * @return 是否成功
      */
     @RequestMapping("/edit")
+    @SaCheckPermission("meetingRoom")
     public Result edit(@RequestBody MeetingRoom meetingRoom){
 
         try {
@@ -90,6 +97,7 @@ public class MeetingRoomController {
      * @return 是否成功
      */
     @RequestMapping("/editAndUpload")
+    @SaCheckPermission("meetingRoom")
     public Result editAndUpload(MultipartFile file,String info, String room,Integer capacity,String status,String name,String faculty){
         try {
             MeetingRoom meetingRoom = new MeetingRoom(room,capacity,status,info,new Faculty(name,faculty));
@@ -108,6 +116,7 @@ public class MeetingRoomController {
      * @return 是否成功
      */
     @RequestMapping("/delete/{id}")
+    @SaCheckPermission("meetingRoom")
     public Result delete(@PathVariable Integer id){
         try {
             meetingRoomService.delete(id);
@@ -125,6 +134,7 @@ public class MeetingRoomController {
      * @return list
      */
     @RequestMapping("/findByFacultyId/{id}")
+    @SaCheckPermission("apply")
     public Result findByFaculty(@PathVariable Integer id){
         try {
             List<MeetingRoom> meetingRoom = meetingRoomService.findByFacultyId(id);
@@ -139,6 +149,7 @@ public class MeetingRoomController {
      * 根据会议id,查询会议室信息
      */
     @RequestMapping("/findByMeetingId/{id}")
+    @SaCheckPermission(value = {"meetingHistory","meetingOngoing","meetingVerify","verifyHistory","future","history","applyHistory"},mode = SaMode.OR)
     public Result findByMeetingId(@PathVariable Integer id){
         try {
             MeetingRoom meetingRoom = meetingRoomService.findByMeetingId(id);

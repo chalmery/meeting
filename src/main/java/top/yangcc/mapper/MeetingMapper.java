@@ -136,17 +136,17 @@ public interface MeetingMapper {
 
     /**
      * 用户历史会议查询
-     * @param meeting meeting
+     * @param map  map
      * @return page
      */
-    Page<Meeting> findPageByUserHistory(Meeting meeting);
+    Page<Integer> findPageByUserHistory(Map<String,Object> map);
 
     /**
      * 用户将要参加会议查询
-     * @param meeting meeting
+     * @param map  map
      * @return page
      */
-    Page<Meeting> findPageByFuture(Meeting meeting);
+    Page<Integer> findPageByFuture(Map<String,Object> map);
 
 
     /**
@@ -181,4 +181,18 @@ public interface MeetingMapper {
      * @return 状态
      */
     String findStatusById(Integer id);
+
+    /**
+     * 查询全部的要参加会议
+     * @param username username
+     * @return list
+     */
+    List<Meeting> findAllFutureByUsername(String username);
+
+    /**
+     * 根据id查询会议详情
+     * @param id id
+     * @return meeting
+     */
+    Meeting findAllById(Integer id);
 }

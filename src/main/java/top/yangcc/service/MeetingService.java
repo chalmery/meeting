@@ -91,14 +91,23 @@ public interface MeetingService {
     /**
      * 用户历史会议
      * @param queryPageBean   queryPageBean
+     * @param username username
      * @return PageResult
      */
-    PageResult findPageByUserHistory(QueryMeetingPageBean queryPageBean);
+    PageResult findPageByUserHistory(QueryMeetingPageBean queryPageBean,String username);
 
     /**
      * 用户将要参加的会议
      * @param queryPageBean   queryPageBean
+     * @param username username
      * @return PageResult
      */
-    PageResult findPageByFuture(QueryMeetingPageBean queryPageBean);
+    PageResult findPageByFuture(QueryMeetingPageBean queryPageBean,String username);
+
+    /**
+     * 查询用户要参加的所有会议
+     * @param username username
+     * @return list
+     */
+    List<Meeting> findAllFutureByUsername(String username);
 }

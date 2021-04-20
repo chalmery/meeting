@@ -1,10 +1,12 @@
 package top.yangcc.controller;
 
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import top.yangcc.entity.Faculty;
 import top.yangcc.request.User;
 import top.yangcc.response.ConflictUser;
 import top.yangcc.response.PageResult;
@@ -19,9 +21,11 @@ import java.util.List;
 
 /**
  * 登录相关的controller
+ * 登录才可访问
  * @author yangcc
  */
 @RestController
+@SaCheckLogin
 @RequestMapping("/user")
 public class UserController {
 
@@ -58,6 +62,7 @@ public class UserController {
 
     /** 查询所有的用户信息,根据院系id */
     @RequestMapping("/findByFacultyId/{id}")
+    @SaCheckPermission("apply")
     public Result findByFacultyId(@PathVariable Integer id){
         try {
             List<top.yangcc.entity.User> users =  userService.findByFacultyId(id);
@@ -69,6 +74,7 @@ public class UserController {
     }
     /** 分页查询 */
     @RequestMapping("/findPage")
+    @SaCheckPermission("user")
     public Result findPage(@RequestBody QueryUserPageBean queryUserPageBean){
         try {
             PageResult pageResult = userService.findUserByCondition(queryUserPageBean);
@@ -80,6 +86,7 @@ public class UserController {
     }
     /** 新增用户 */
     @RequestMapping("/add")
+    @SaCheckPermission("user")
     public Result add(MultipartFile avatar, String username, String password, String faculty, String role){
         try {
             //查询用户是否已经存
@@ -108,6 +115,7 @@ public class UserController {
 
     /** 修改用户*/
     @RequestMapping("/edit")
+    @SaCheckPermission("user")
     public Result edit(@RequestBody User user){
         try {
             userService.edit(user.getId(),user.getUsername(),user.getPassword(),user.getFaculty(),user.getRole());
@@ -120,6 +128,7 @@ public class UserController {
 
     /** 修改用户+修改头像*/
     @RequestMapping("/editAndUpload")
+    @SaCheckPermission("user")
     public Result editAndUpload(MultipartFile avatar,Integer id,String username,String password,String faculty,String role){
         try {
             boolean isNull = PictureVerify.isPictureAndIsNull(avatar);
@@ -137,6 +146,7 @@ public class UserController {
 
     /*** 删除用户*/
     @RequestMapping("/delete/{id}")
+    @SaCheckPermission("user")
     public Result delete(@PathVariable Integer id){
         try {
             userService.delete(id);
@@ -147,8 +157,9 @@ public class UserController {
         }
     }
 
-    /**用户自定义修改,不带头像*/
+    /**用户自定义修改*/
     @RequestMapping("/userEdit")
+    @SaCheckPermission("my")
     public Result userEdit(@RequestBody top.yangcc.entity.User user){
         try {
             userService.userEdit(user);
@@ -160,6 +171,7 @@ public class UserController {
     }
     /** 用户自定义修改头像 */
     @RequestMapping("/userEditAvatar")
+    @SaCheckPermission("my")
     public Result userEditAvatar(MultipartFile file,Integer id){
         try {
             userService.userEditAvatar(file,id);
@@ -172,6 +184,7 @@ public class UserController {
 
     /**查询会议对应的用户信息*/
     @RequestMapping("/findByMeetingId/{id}")
+    @SaCheckPermission(value = {"meetingHistory","meetingOngoing","meetingVerify","verifyHistory","future","history","applyHistory"},mode = SaMode.OR)
     public Result findByMeetingId(@PathVariable Integer id){
         try {
             List<top.yangcc.entity.User> users = userService.findByMeetingId(id);
@@ -184,6 +197,7 @@ public class UserController {
 
     /**查询会议冲突的用户*/
     @RequestMapping("/findByConflict/{id}")
+    @SaCheckPermission("meetingVerify")
     public Result findByConflict(@PathVariable Integer id){
         try {
             List<ConflictUser> users = userService.findByConflict(id);

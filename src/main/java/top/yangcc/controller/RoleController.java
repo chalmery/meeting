@@ -1,5 +1,7 @@
 package top.yangcc.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.yangcc.entity.Role;
@@ -13,12 +15,10 @@ import java.util.List;
 
 /**
  * 角色Controller
- * @SaCheckLogin
- * @SaCheckPermission("role")
  * @author yangcc
  */
 @RestController
-
+@SaCheckLogin
 @RequestMapping("/role")
 public class RoleController {
 
@@ -33,6 +33,7 @@ public class RoleController {
      * 分页查询
      */
     @RequestMapping("/findPage")
+    @SaCheckPermission("role")
     public Result findPage(@RequestBody  QueryPageBean queryPageBean){
         try {
             PageResult pageResult = roleService.findByCondition(queryPageBean);
@@ -45,6 +46,7 @@ public class RoleController {
 
     /**查询所有的是管理员的角色*/
     @RequestMapping("/findAllAdminRole")
+    @SaCheckPermission("admin")
     public Result findAllAdminRole(){
         try {
             List<Role> roles = roleService.findAllAdminRole();
@@ -57,6 +59,7 @@ public class RoleController {
 
     /**查询所有的是User的角色*/
     @RequestMapping("/findAllUserRole")
+    @SaCheckPermission("user")
     public Result findAllUserRole(){
         try {
             List<Role> roles = roleService.findAllUserRole();
@@ -69,6 +72,7 @@ public class RoleController {
 
     /**新建角色*/
     @RequestMapping("/add")
+    @SaCheckPermission("role")
     public Result add(@RequestBody Role role){
         try {
             roleService.add(role);
@@ -81,6 +85,7 @@ public class RoleController {
 
     /**修改角色*/
     @RequestMapping("/edit")
+    @SaCheckPermission("role")
     public Result edit(@RequestBody Role role){
         try {
             roleService.edit(role);
@@ -93,6 +98,7 @@ public class RoleController {
 
     /**删除角色*/
     @RequestMapping("/delete/{id}")
+    @SaCheckPermission("role")
     public Result delete(@PathVariable Integer id){
         try {
             roleService.delete(id);

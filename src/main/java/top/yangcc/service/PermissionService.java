@@ -11,5 +11,5 @@ public interface PermissionService {
      * @param id userid
      * @return list
      */
-    List<String> findPermissionValueByUserId(Integer id);
+    List<String> findPermissionValueByUserId(String id);
 }

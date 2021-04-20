@@ -1,5 +1,7 @@
 package top.yangcc.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,6 +24,7 @@ import java.util.Set;
  * @author yangcc
  */
 @RestController
+@SaCheckLogin
 @RequestMapping("/meeting")
 public class MeetingController {
 
@@ -34,6 +37,7 @@ public class MeetingController {
 
     /**新增会议*/
     @RequestMapping("/add")
+    @SaCheckPermission("apply")
     public Result add(@RequestBody Meeting meeting){
         try {
             meetingService.add(meeting);
@@ -47,18 +51,20 @@ public class MeetingController {
 
     /**审核通过*/
     @RequestMapping("/pass/{id}/{username}")
+    @SaCheckPermission("meetingVerify")
     public Result pass(@PathVariable  Integer id,@PathVariable String username){
         try {
             meetingService.pass(id,username);
-            return Result.success("修改状态成功");
+            return Result.success("审核通过");
         } catch (Exception e) {
             e.printStackTrace();
-            return Result.fail("修改状态失败");
+            return Result.fail("审核通过失败");
         }
     }
 
     /**审核不通过*/
     @RequestMapping("/fail")
+    @SaCheckPermission("meetingVerify")
     public Result fail(@RequestBody Map<String,Object> map){
         Integer id = (Integer) map.get("id");
         String username = (String) map.get("username");
@@ -86,6 +92,7 @@ public class MeetingController {
 
     /**查询会议冲突列表*/
     @RequestMapping("/findByConflict/{id}")
+    @SaCheckPermission("meetingVerify")
     public Result findByConflict(@PathVariable Integer id){
         try {
             List<Meeting> list =  meetingService.findByConflict(id);
@@ -99,6 +106,7 @@ public class MeetingController {
 
     /**查询会议冲突列表,根据人员查询*/
     @RequestMapping("/findByConflictUser/{id}")
+    @SaCheckPermission("meetingVerify")
     public Result findByConflictUser(@PathVariable Integer id){
         try {
             Set<Meeting> list =  meetingService.findByConflictUser(id);
@@ -111,6 +119,7 @@ public class MeetingController {
 
     /**分页查询会议审核历史*/
     @RequestMapping("/findPageByVerifyHistory")
+    @SaCheckPermission("verifyHistory")
     public Result findPageByVerifyHistory(@RequestBody QueryMeetingPageBean queryPageBean){
         try {
             PageResult pageResult =  meetingService.findPageByVerifyHistory(queryPageBean);
@@ -124,6 +133,7 @@ public class MeetingController {
 
     /**分页查询会议审核历史*/
     @RequestMapping("/findPageByOngoing")
+    @SaCheckPermission("meetingOngoing")
     public Result findPageByOngoing(@RequestBody QueryMeetingPageBean queryPageBean){
         try {
             PageResult pageResult =  meetingService.findPageByOngoing(queryPageBean);
@@ -136,6 +146,7 @@ public class MeetingController {
 
     /**分页查询会议审核历史*/
     @RequestMapping("/findPageByHistory")
+    @SaCheckPermission("meetingHistory")
     public Result findPageByHistory(@RequestBody QueryMeetingPageBean queryPageBean){
         try {
             PageResult pageResult =  meetingService.findPageByHistory(queryPageBean);
@@ -148,6 +159,7 @@ public class MeetingController {
 
     /**用户申请历史会议查询*/
     @RequestMapping("/findPageByApply")
+    @SaCheckPermission("applyHistory")
     public Result findPageByApply(@RequestBody QueryMeetingPageBean queryPageBean){
         try {
             PageResult pageResult =  meetingService.findPageByApply(queryPageBean);
@@ -159,10 +171,11 @@ public class MeetingController {
     }
 
     /**用户历史会议查询*/
-    @RequestMapping("/findPageByUserHistory")
-    public Result findPageByUserHistory(@RequestBody QueryMeetingPageBean queryPageBean){
+    @RequestMapping("/findPageByUserHistory/{username}")
+    @SaCheckPermission("history")
+    public Result findPageByUserHistory(@RequestBody QueryMeetingPageBean queryPageBean,@PathVariable String username){
         try {
-            PageResult pageResult =  meetingService.findPageByUserHistory(queryPageBean);
+            PageResult pageResult =  meetingService.findPageByUserHistory(queryPageBean,username);
             return Result.success(pageResult);
         } catch (Exception e) {
             e.printStackTrace();
@@ -172,10 +185,11 @@ public class MeetingController {
 
 
     /**将要进行的查询*/
-    @RequestMapping("/findPageByFuture")
-    public Result findPageByFuture(@RequestBody QueryMeetingPageBean queryPageBean){
+    @RequestMapping("/findPageByFuture/{username}")
+    @SaCheckPermission("future")
+    public Result findPageByFuture(@RequestBody QueryMeetingPageBean queryPageBean,@PathVariable String username){
         try {
-            PageResult pageResult =  meetingService.findPageByFuture(queryPageBean);
+            PageResult pageResult =  meetingService.findPageByFuture(queryPageBean,username);
             return Result.success(pageResult);
         } catch (Exception e) {
             e.printStackTrace();
@@ -184,4 +198,17 @@ public class MeetingController {
     }
 
 
+
+    /**查询全部要参加的会议*/
+    @RequestMapping("/findAllFutureByUsername/{username}")
+    @SaCheckPermission("home")
+    public Result findAllFutureByUsername(@PathVariable String username){
+        try {
+            List<Meeting> list =  meetingService.findAllFutureByUsername(username);
+            return Result.success(list);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("查询会议信息失败");
+        }
+    }
 }

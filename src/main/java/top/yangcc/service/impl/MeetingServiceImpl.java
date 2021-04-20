@@ -368,34 +368,59 @@ public class MeetingServiceImpl implements MeetingService {
 
     /**用户历史会议*/
     @Override
-    public PageResult findPageByUserHistory(QueryMeetingPageBean queryPageBean) {
+    public PageResult findPageByUserHistory(QueryMeetingPageBean queryPageBean,String username) {
         //  当前页码，每页显示条数 查询条件
         Integer currentPage = queryPageBean.getCurrentPage();
         Integer pageSize = queryPageBean.getPageSize();
         Meeting meeting = queryPageBean.getMeeting();
         // 使用分页助手查询
         PageHelper.startPage(currentPage,pageSize);
-        Page<Meeting> meetings = meetingMapper.findPageByUserHistory(meeting);
-        PageInfo<Meeting> pageInfo = new PageInfo<>(meetings);
-        List<Meeting> list = pageInfo.getList();
+        Map<String,Object> map  = new HashMap<>();
+        map.put("meeting",meeting);
+        map.put("username",username);
+        Page<Integer> meetings = meetingMapper.findPageByUserHistory(map);
+        PageInfo<Integer> pageInfo = new PageInfo<>(meetings);
+        List<Integer> list = pageInfo.getList();
+        List<Meeting> list1 = new ArrayList<>();
+        //查询这些会议的详情
+        for (Integer integer : list) {
+            Meeting byId = meetingMapper.findAllById(integer);
+            list1.add(byId);
+        }
         long total = pageInfo.getTotal();
-        return new PageResult(total,list);
+        return new PageResult(total,list1);
     }
 
     /**将要参加的会议*/
     @Override
-    public PageResult findPageByFuture(QueryMeetingPageBean queryPageBean) {
+    public PageResult findPageByFuture(QueryMeetingPageBean queryPageBean,String username) {
         //  当前页码，每页显示条数 查询条件
         Integer currentPage = queryPageBean.getCurrentPage();
         Integer pageSize = queryPageBean.getPageSize();
         Meeting meeting = queryPageBean.getMeeting();
         // 使用分页助手查询
         PageHelper.startPage(currentPage,pageSize);
-        Page<Meeting> meetings = meetingMapper.findPageByFuture(meeting);
-        PageInfo<Meeting> pageInfo = new PageInfo<>(meetings);
-        List<Meeting> list = pageInfo.getList();
+        Map<String,Object> map  = new HashMap<>();
+        map.put("meeting",meeting);
+        map.put("username",username);
+        //查询此用户全部待参加的会议
+        Page<Integer> meetings = meetingMapper.findPageByFuture(map);
+        PageInfo<Integer> pageInfo = new PageInfo<>(meetings);
+        List<Integer> list = pageInfo.getList();
+        List<Meeting> list1 = new ArrayList<>();
+        //查询这些会议的详情
+        for (Integer integer : list) {
+            Meeting byId = meetingMapper.findAllById(integer);
+            list1.add(byId);
+        }
         long total = pageInfo.getTotal();
-        return new PageResult(total,list);
+        return new PageResult(total,list1);
+    }
+
+    /**将要参加的会议All*/
+    @Override
+    public List<Meeting> findAllFutureByUsername(String username) {
+        return meetingMapper.findAllFutureByUsername(username);
     }
 
     /**查询会议冲突列表,根据会议室*/

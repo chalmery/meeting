@@ -28,7 +28,7 @@ public class StpInterfaceImpl implements StpInterface {
     @Override
     public List<String> getPermissionList(Object loginId, String loginKey) {
         //根据用户名查询用户的权限码集合
-        return permissionService.findPermissionValueByUserId((Integer) loginId);
+        return permissionService.findPermissionValueByUserId((String) loginId);
     }
 
     /**

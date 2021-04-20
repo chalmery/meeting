@@ -1,5 +1,7 @@
 package top.yangcc.controller;
 
+import cn.dev33.satoken.annotation.SaCheckLogin;
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +21,8 @@ import java.io.IOException;
  * @author yangcc
  */
 @RestController
+@SaCheckLogin
+@SaCheckPermission("admin")
 @RequestMapping("/admin")
 public class AdminController {
 
