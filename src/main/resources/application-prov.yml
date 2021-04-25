@@ -1,19 +1,40 @@
+# 部署环境的配置
 server:
-  port: 8080
+  port: 9000
 spring:
+  # 设置文件上传的默认大小
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  # datasource
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/meeting
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
     username: root
-    password: root
+    password: Yc981203.
+  # rabbitMq
+  rabbitmq:
+    addresses: 127.0.0.1
+    port: 5672
+    username: admin
+    password: yc981203.
+    virtual-host: /meeting
+    # 手动ack
+    listener:
+      simple:
+        acknowledge-mode: manual
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    locale: zh_CN
 #mybatis
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: top.yangcc.entity
   configuration:
     map-underscore-to-camel-case: true
-
 #pagehelper
 pagehelper:
   helper-dialect: mysql

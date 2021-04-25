@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.yangcc.mapper.MessageMapper">
+    <!--message-->
+    <resultMap id="MessageMap" type="Message">
+        <id column="meid" property="id"/>
+        <result column="send_time" property="sendTime"/>
+        <result column="content" property="content"/>
+        <result column="read" property="read"/>
+        <!--meeting-->
+        <collection property="meeting" ofType="Meeting">
+            <id column="mid" property="id"/>
+        </collection>
+        <!--user-->
+        <collection property="addressee" ofType="User">
+            <result column="uid" property="id"/>
+        </collection>
+    </resultMap>
+    <!--分页查询-->
+    <select id="findPage" resultMap="MessageMap" parameterType="Message">
+        select me.*,me.id meid,m.id mid,u.id uid
+        from m_message me,m_meeting m,m_user u
+        where me.meeting_id =m.id and me.addressee = u.id
+        <if test="id !=null and id.length>0">
+            and me.id = #{id}
+        </if>
+        <if test="meeting.id !=null and meeting.length>0">
+            and  m.id =#{meeting.id}
+        </if>
+        <if test="addressee.id !=null and addressee.length>0">
+            and  u.id =#{addressee.id}
+        </if>
+    </select>
+
+    <update id="edit" parameterType="map">
+        update m_message set content=#{content}
+        where id = #{id}
+    </update>
+
+
+    <!--查询此用户对应的消息-->
+    <select id="findPageByUser" resultMap="MessageMap" parameterType="String">
+        select me.*,me.id meid,m.id mid,u.id uid
+        from m_message me,m_meeting m,m_user u
+        where me.meeting_id =m.id and me.addressee = u.id and u.username=#{username}
+    </select>
+
+    <!--修改消息状态为已读-->
+    <update id="haveRead" parameterType="int">
+        update m_message set `read` = true
+        where id = #{id}
+    </update>
+
+    <!--查询全部未读消息-->
+    <select id="findAllReadMessage" parameterType="String" resultType="Message">
+        select me.*
+        from m_message me,m_user u
+        where me.addressee = u.id  and me.`read`=false
+        and u.username=#{username}
+    </select>
+
+    <!--新增消息-->
+    <insert id="add" parameterType="Message">
+        insert into m_message(send_time, content, addressee, `read`)
+        values (#{sendTime},#{content},#{addressee.id},#{read})
+    </insert>
+
+
+</mapper>

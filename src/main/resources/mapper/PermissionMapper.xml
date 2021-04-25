@@ -4,8 +4,8 @@
     <!--根据用户名查询用户权限集合-->
     <select id="findPermissionValueByUserId" resultType="string" parameterType="string">
         select p.name
-        from m_permission p ,m_permission_menu pu,m_menu m ,m_user u,m_role_menu rm,m_role r
-        where p.id = pu.permission_id and m.id = pu.menu_id
+        from m_permission p ,m_menu m ,m_user u,m_role_menu rm,m_role r
+        where p.m_id=m.id
         and u.role_id  = r.id and r.id = rm.role_id and rm.menu_id =  m.id
         and u.username = #{username}
     </select>
