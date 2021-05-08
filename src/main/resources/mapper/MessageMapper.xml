@@ -61,8 +61,8 @@
 
     <!--新增消息-->
     <insert id="add" parameterType="Message">
-        insert into m_message(send_time, content, addressee, `read`)
-        values (#{sendTime},#{content},#{addressee.id},#{read})
+        insert into m_message(send_time, content, addressee, `read`,meeting_id)
+        values (#{sendTime},#{content},#{addressee.id},#{read},#{meeting.id})
     </insert>
 
 

@@ -80,6 +80,7 @@ public class MeetingController {
 
     /**审批页分页查询*/
     @RequestMapping("/findPageByVerify")
+    @SaCheckPermission("meetingVerify")
     public Result findPageByVerify(@RequestBody QueryMeetingPageBean queryPageBean){
         try {
             PageResult pageResult =  meetingService.findPageByVerify(queryPageBean);

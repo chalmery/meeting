@@ -224,6 +224,7 @@ public class MeetingServiceImpl implements MeetingService {
         //修改会议状态为未通过
         meetingMapper.editApprovalStatus(meeting);
         //发送消息
+        sendMessage(id,user.getId(),dateTimeFormatter.format(dateTime),message);
     }
 
     /**审核页分页查询*/
@@ -473,7 +474,9 @@ public class MeetingServiceImpl implements MeetingService {
     private void sendMessage(Integer meetingId,Integer userId,String sendTime,String content){
         User user = new User();
         user.setId(userId);
-        Message message = new Message(null, sendTime, content, user, null, false);
+        Meeting meeting = new Meeting();
+        meeting.setId(meetingId);
+        Message message = new Message(null, sendTime, content, user,meeting , false);
         messageMapper.add(message);
     }
 }

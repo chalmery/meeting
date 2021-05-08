@@ -19,10 +19,16 @@ import top.yangcc.service.LoginService;
 @RestController
 @RequestMapping("/login")
 public class LoginController {
-    @Autowired
+
     private CaptchaService captchaService;
-    @Autowired
+
     private LoginService loginService;
+
+    @Autowired
+    public LoginController(CaptchaService captchaService, LoginService loginService) {
+        this.captchaService = captchaService;
+        this.loginService = loginService;
+    }
 
     /**
      * 对用户滑动图形的数据信息判断

@@ -1,0 +1,28 @@
+version: '3.1'
+services:
+  nginx:
+    image: daocloud.io/library/nginx:latest
+    container_name: nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./docker/nginx/dist/:/usr/share/nginx/html/
+  rabbitmq:
+    image: daocloud.io/library/rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./data:/var/lib/rabbitmq
+  mysql:
+    image: daocloud.io/library/mysql:5.7.4
+    container_name: mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      TZ: Asia/Shanghai
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
