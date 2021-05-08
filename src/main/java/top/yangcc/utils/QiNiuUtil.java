@@ -15,9 +15,9 @@ import com.qiniu.util.Auth;
  * @author yangcc
  */
 public class QiNiuUtil {
-    private static final String ACCESS_KEY = "r2LmAZyZtFlv8DNjVIJuMg83ZbG13lmc4WsM6yOC";
-    private static final String SECRET_KEY = "Ea2OH3aJeAtlAvW3hr3OSDWgFtzc5R-kG5RtBjnx";
-    private static final String BUCKET = "yangccblog";
+    private static final String ACCESS_KEY = "access";
+    private static final String SECRET_KEY = "secret";
+    private static final String BUCKET = "七牛云bucket名称";
 
     /**
      * 图片上传
