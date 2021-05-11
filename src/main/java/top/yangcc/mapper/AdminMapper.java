@@ -58,5 +58,29 @@ public interface AdminMapper {
      */
     void delete(Integer id);
 
+    /**
+     * 踢人下线
+     * @param id id
+     */
+    void offline(Integer id);
 
+    /**
+     * 账号封禁
+     * @param id id
+     */
+    void ban(Integer id);
+
+    /**
+     * 根据id获取用户名
+     * @param id id
+     * @return username
+     */
+    String findUsernameById(Integer id);
+
+
+    /**
+     * 解封进
+     * @param username username
+     */
+    void unBan(String username);
 }

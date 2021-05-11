@@ -28,13 +28,13 @@
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-spring-boot-starter</artifactId>
-            <version>1.15.0.RELEASE</version>
+            <version>1.19.0</version>
         </dependency>
         <!-- sa-token注解鉴权 -->
         <dependency>
             <groupId>cn.dev33</groupId>
             <artifactId>sa-token-spring-aop</artifactId>
-            <version>1.15.0.RELEASE</version>
+            <version>1.19.0</version>
         </dependency>
         <!--七牛云-->
         <dependency>

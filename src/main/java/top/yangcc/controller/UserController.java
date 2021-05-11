@@ -4,6 +4,7 @@ package top.yangcc.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaMode;
+import cn.dev33.satoken.stp.StpUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -206,5 +207,46 @@ public class UserController {
             e.printStackTrace();
             return Result.fail("查询失败");
         }
+    }
+
+    /** 踢人下线*/
+    @PutMapping("/offline/{id}")
+    public Result offline(@PathVariable Integer id){
+        try {
+            userService.offline(id);
+            return Result.success("踢人下线成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("踢人下线失败");
+        }
+    }
+
+    /*** 封禁 */
+    @PutMapping("/ban/{id}/{banTime}/{forever}/{deleteMeetingApply}")
+    public Result ban(@PathVariable Integer id,
+                      @PathVariable Integer banTime,
+                      @PathVariable boolean deleteMeetingApply,
+                      @PathVariable boolean forever){
+        try {
+            userService.ban(id,banTime,deleteMeetingApply,forever);
+            return Result.success("账号封禁成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.fail("账号封禁失败");
+        }
+    }
+
+    /*** 获取剩余封禁时间 */
+    @GetMapping("/banTime/{username}")
+    public Result ban(@PathVariable String username){
+        long disableTime = StpUtil.getDisableTime(username);
+        return Result.success(disableTime);
+    }
+
+    /**解封*/
+    @PutMapping("/unBan/{username}")
+    public Result unBan(@PathVariable String username){
+        userService.unBan(username);
+        return Result.success("解除封禁成功");
     }
 }

@@ -309,4 +309,16 @@
         and m.approval_status = '审核通过' and m.status != '已经结束'
         and u.username= #{username}
     </select>
+
+    <!--查询所有此用户发起的还未未审核的会议id-->
+    <select id="findMeetingApplyAllForUserId" resultType="int" parameterType="int">
+        select m.id
+        from m_meeting m,m_user u
+        where m.sponsor = u.id and u.id=#{id} and m.approval_status = '未审核'
+    </select>
+
+    <!--删除所有此id的会议申请-->
+    <delete id="deleteMeetingApplyAllForMeetingId" parameterType="int">
+        delete from m_meeting where id=#{id}
+    </delete>
 </mapper>

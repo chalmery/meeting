@@ -99,35 +99,79 @@ public class Result implements Serializable {
     }
 
     /**
-     * 未授权的返回
+     * 未提供token
      * @return result
      */
-    public static Result unauthorized(String message,Object data){
+    public static Result unToken(){
         Result result = new Result();
-        result.setCode(400);
-        result.setMessage(message);
-        result.setData(data);
+        result.setCode(401);
+        result.setMessage("未提供token");
         return result;
     }
 
     /**
-     * 未授权的返回
+     * token无效
      * @return result
      */
-    public static Result unauthorized(String message){
+    public static Result invalidToken(){
         Result result = new Result();
-        result.setCode(400);
-        result.setMessage(message);
+        result.setCode(402);
+        result.setMessage("token无效");
         return result;
     }
 
     /**
-     * 未授权的返回
+     * token已过期
      * @return result
      */
-    public static Result unauthorized(){
+    public static Result expiredToken(){
         Result result = new Result();
-        result.setCode(400);
+        result.setCode(403);
+        result.setMessage("您的登录信息已过期，请重新登录");
+        return result;
+    }
+
+    /**
+     * token已被顶下线
+     * @return result
+     */
+    public static Result conflictToken(){
+        Result result = new Result();
+        result.setCode(404);
+        result.setMessage("您的账号在别处登录");
+        return result;
+    }
+
+    /**
+     * token已被踢下线
+     * @return result
+     */
+    public static Result forcedOfflineToken(){
+        Result result = new Result();
+        result.setCode(405);
+        result.setMessage("您已被踢下线");
+        return result;
+    }
+
+    /**
+     * 当前会话未登录
+     * @return result
+     */
+    public static Result noLoginToken(){
+        Result result = new Result();
+        result.setCode(406);
+        result.setMessage("当前会话未登录");
+        return result;
+    }
+
+    /**
+     * 当前会话未登录
+     * @return result
+     */
+    public static Result banToken(){
+        Result result = new Result();
+        result.setCode(407);
+        result.setMessage("当前账号已被封禁");
         return result;
     }
 

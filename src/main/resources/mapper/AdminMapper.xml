@@ -8,6 +8,7 @@
         <result column="username" property="username"/>
         <result column="password" property="password"/>
         <result column="admin" property="admin"/>
+        <result column="status" property="status"/>
         <!--role-->
         <collection property="role" ofType="Role">
             <id column="rid" property="id"/>
@@ -22,7 +23,7 @@
     </resultMap>
     <!--分页查询所有的admin用户的信息-->
     <select id="findAdminByCondition" resultMap="adminMap" parameterType="top.yangcc.request.User">
-        select u.id uid,u.username,u.avatar,r.id rid,r.name rname,r.code,f.id fid,f.name fname
+        select u.id uid,u.username,u.avatar,u.status,r.id rid,r.name rname,r.code,f.id fid,f.name fname
         from m_user u,m_role r,m_faculty f
         where u.role_id= r.id and f.id=u.faculty_id and u.admin =true
         <if test="id !=null">
@@ -52,8 +53,8 @@
 
     <!--新建admin用户-->
     <insert id="add" parameterType="User">
-        insert into m_user(username, password, faculty_id, admin, avatar, role_id)
-        VALUES(#{username},#{password},#{faculty.id},#{admin},#{avatar},#{role.id})
+        insert into m_user(username, password, faculty_id, admin, avatar,status,role_id)
+        VALUES(#{username},#{password},#{faculty.id},#{admin},#{avatar},#{status},#{role.id})
     </insert>
 
 
@@ -80,4 +81,20 @@
     <delete id="delete" parameterType="int">
         delete from m_user where id=#{id}
     </delete>
+
+    <update id="offline" parameterType="int">
+        update m_user set status= '离线' where id=#{id}
+    </update>
+
+    <update id="ban" parameterType="int">
+        update m_user set status= '封禁中' where id=#{id}
+    </update>
+
+    <update id="unBan" parameterType="string">
+        update m_user set status= '离线' where username=#{username}
+    </update>
+
+    <select id="findUsernameById" parameterType="int" resultType="string">
+        select username from m_user where id=#{id}
+    </select>
 </mapper>

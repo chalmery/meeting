@@ -72,5 +72,24 @@ public interface AdminService {
      */
     void delete(Integer id);
 
+    /**
+     * 踢人下线
+     * @param id id
+     */
+    void offline(Integer id);
 
+    /**
+     * 账号封禁
+     * @param id id
+     * @param banTime 封禁时间
+     * @param deleteMeetingApply 是否删除未审核的会议申请
+     * @param forever 是否永久封禁
+     */
+    void ban(Integer id, Integer banTime, boolean deleteMeetingApply, boolean forever);
+
+    /**
+     * 解封
+     * @param username username
+     */
+    void unBan(String username);
 }

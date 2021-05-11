@@ -195,4 +195,17 @@ public interface MeetingMapper {
      * @return meeting
      */
     Meeting findAllById(Integer id);
+
+    /**
+     * 删除此用户申请的所有的待申请会议
+     * @param id id
+     */
+    void deleteMeetingApplyAllForMeetingId(Integer id);
+
+    /**
+     * 查询此用户对应的所有的待审核会议id
+     * @param id userId
+     * @return meeting ids
+     */
+    List<Integer> findMeetingApplyAllForUserId(Integer id);
 }

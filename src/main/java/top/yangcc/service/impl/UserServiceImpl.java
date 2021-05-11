@@ -1,5 +1,6 @@
 package top.yangcc.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -32,6 +33,8 @@ import java.util.*;
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
+    private static final String OFF_LINE = "离线";
+
     private UserMapper userMapper;
 
     private RoleMapper roleMapper;
@@ -133,7 +136,7 @@ public class UserServiceImpl implements UserService {
             faculty1.setId(facultyId);
             Role role1 = new Role();
             role1.setId(roleId);
-            User user = new User(avatarName, username, encrypt, true, role1, faculty1);
+            User user = new User(avatarName, username, encrypt, true, OFF_LINE,role1, faculty1);
             //插入数据库
             userMapper.add(user);
         }
@@ -153,7 +156,7 @@ public class UserServiceImpl implements UserService {
             faculty1.setId(facultyId);
             Role role1 = new Role();
             role1.setId(roleId);
-            User user = new User("header.jpg", username, encrypt, true,role1,faculty1);
+            User user = new User("header.jpg", username, encrypt, true,OFF_LINE,role1,faculty1);
             //插入数据库
             userMapper.add(user);
         }
@@ -316,5 +319,67 @@ public class UserServiceImpl implements UserService {
             }
         }
         return list;
+    }
+
+
+    /**踢人下线*/
+    @Override
+    public void offline(Integer id) {
+        String username = userMapper.findUsernameById(id);
+        //下线
+        StpUtil.logoutByLoginId(username);
+        //修改数据库
+        userMapper.offline(id);
+    }
+
+    /**账号封禁*/
+    @Override
+    public void ban(Integer id, Integer banTime, boolean deleteMeetingApply, boolean forever) {
+        //查询此用户对应的用户名
+        String username = userMapper.findUsernameById(id);
+        //踢下线
+        StpUtil.logoutByLoginId(username);
+        //删除申请并且永久封禁
+        if (deleteMeetingApply && forever){
+            //查询此用户对应的所有的待审核会议id
+            List<Integer> ids = meetingMapper.findMeetingApplyAllForUserId(id);
+            for (Integer meetingId : ids) {
+                //删除会议申请
+                meetingMapper.deleteMeetingApplyAllForMeetingId(id);
+            }
+            //永久封禁
+            StpUtil.disable(username, -1);
+        }
+        //删除申请并且不永久封禁
+        if (deleteMeetingApply && !forever){
+            //查询此用户对应的所有的待审核会议id
+            List<Integer> ids =meetingMapper.findMeetingApplyAllForUserId(id);
+            for (Integer meetingId : ids) {
+                //删除会议申请
+                meetingMapper.deleteMeetingApplyAllForMeetingId(id);
+            }
+            //指定时间封禁
+            StpUtil.disable(username,banTime*86400);
+        }
+        //不删除申请且不永久封禁
+        if (!deleteMeetingApply && !forever){
+            //指定时间封禁
+            StpUtil.disable(username,banTime*86400);
+        }
+        //不删除永久封禁
+        if (!deleteMeetingApply && forever){
+            //永久封禁
+            StpUtil.disable(username, -1);
+        }
+        //修改数据库
+        userMapper.ban(id);
+    }
+
+    @Override
+    public void unBan(String username) {
+        //解封禁
+        StpUtil.untieDisable(username);
+        //设置用户状态
+        userMapper.unBan(username);
     }
 }

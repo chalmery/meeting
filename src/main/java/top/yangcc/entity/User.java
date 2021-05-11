@@ -23,17 +23,22 @@ public class User implements Serializable {
     private String password;
     /** 是否是管理员 */
     private boolean admin;
+    /** 用户状态*/
+    private String status;
     /** 用户角色*/
     private Role role;
     /** 用户对应的院系*/
    private Faculty faculty;
 
-    public User(String avatar, String username, String password, boolean admin, Role role, Faculty faculty) {
+
+
+    public User(String avatar, String username, String password, boolean admin,String status, Role role, Faculty faculty) {
         this.avatar = avatar;
         this.username = username;
         this.password = password;
         this.admin = admin;
         this.role = role;
+        this.status =status;
         this.faculty = faculty;
     }
 

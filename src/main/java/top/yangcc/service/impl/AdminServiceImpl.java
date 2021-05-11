@@ -1,5 +1,6 @@
 package top.yangcc.service.impl;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -12,6 +13,7 @@ import top.yangcc.entity.Role;
 import top.yangcc.entity.User;
 import top.yangcc.mapper.AdminMapper;
 import top.yangcc.mapper.FacultyMapper;
+import top.yangcc.mapper.MeetingMapper;
 import top.yangcc.mapper.RoleMapper;
 import top.yangcc.response.PageResult;
 import top.yangcc.response.QueryUserPageBean;
@@ -30,6 +32,7 @@ import java.util.UUID;
 @Service
 @Transactional
 public class AdminServiceImpl implements AdminService {
+    private static final String OFF_LINE = "离线";
 
     private AdminMapper adminMapper;
 
@@ -37,11 +40,14 @@ public class AdminServiceImpl implements AdminService {
 
     private FacultyMapper facultyMapper;
 
+    private MeetingMapper meetingMapper;
+
     @Autowired
-    public AdminServiceImpl(AdminMapper adminMapper, RoleMapper roleMapper, FacultyMapper facultyMapper) {
+    public AdminServiceImpl(AdminMapper adminMapper, RoleMapper roleMapper, FacultyMapper facultyMapper, MeetingMapper meetingMapper) {
         this.adminMapper = adminMapper;
         this.roleMapper = roleMapper;
         this.facultyMapper = facultyMapper;
+        this.meetingMapper = meetingMapper;
     }
 
     /**
@@ -88,7 +94,7 @@ public class AdminServiceImpl implements AdminService {
             faculty1.setId(facultyId);
             Role role1 = new Role();
             role1.setId(roleId);
-            User user = new User(avatarName, username, encrypt, true, role1, faculty1);
+            User user = new User(avatarName, username, encrypt, true,OFF_LINE, role1, faculty1);
             //插入数据库
             adminMapper.add(user);
         }
@@ -108,7 +114,7 @@ public class AdminServiceImpl implements AdminService {
             faculty1.setId(facultyId);
             Role role1 = new Role();
             role1.setId(roleId);
-            User user = new User("header.jpg", username, encrypt, true,role1,faculty1);
+            User user = new User("header.jpg", username, encrypt, true,OFF_LINE,role1,faculty1);
             //插入数据库
             adminMapper.add(user);
         }
@@ -208,5 +214,66 @@ public class AdminServiceImpl implements AdminService {
         }
         //然后删除这个用户
         adminMapper.delete(id);
+    }
+
+    /**踢人下线*/
+    @Override
+    public void offline(Integer id) {
+        String username = adminMapper.findUsernameById(id);
+        //下线
+        StpUtil.logoutByLoginId(username);
+        //修改数据库
+        adminMapper.offline(id);
+    }
+
+    /**账号封禁*/
+    @Override
+    public void ban(Integer id, Integer banTime, boolean deleteMeetingApply, boolean forever) {
+        //查询此用户对应的用户名
+        String username = adminMapper.findUsernameById(id);
+        //踢下线
+        StpUtil.logoutByLoginId(username);
+        //删除申请并且永久封禁
+        if (deleteMeetingApply && forever){
+            //查询此用户对应的所有的待审核会议id
+            List<Integer> ids = meetingMapper.findMeetingApplyAllForUserId(id);
+            for (Integer meetingId : ids) {
+                //删除会议申请
+                meetingMapper.deleteMeetingApplyAllForMeetingId(id);
+            }
+            //永久封禁
+            StpUtil.disable(username, -1);
+        }
+        //删除申请并且不永久封禁
+        if (deleteMeetingApply && !forever){
+            //查询此用户对应的所有的待审核会议id
+            List<Integer> ids =meetingMapper.findMeetingApplyAllForUserId(id);
+            for (Integer meetingId : ids) {
+                //删除会议申请
+                meetingMapper.deleteMeetingApplyAllForMeetingId(id);
+            }
+            //指定时间封禁
+            StpUtil.disable(username,banTime*86400);
+        }
+        //不删除申请且不永久封禁
+        if (!deleteMeetingApply && !forever){
+            //指定时间封禁
+            StpUtil.disable(username,banTime*86400);
+        }
+        //不删除永久封禁
+        if (!deleteMeetingApply && forever){
+            //永久封禁
+            StpUtil.disable(username, -1);
+        }
+        //修改数据库
+        adminMapper.ban(id);
+    }
+
+    @Override
+    public void unBan(String username) {
+        //解封禁
+        StpUtil.untieDisable(username);
+        //设置用户状态
+        adminMapper.unBan(username);
     }
 }

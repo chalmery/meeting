@@ -128,4 +128,43 @@ public interface UserMapper {
      * @return user
      */
     User findByMessageId(Integer id);
+
+    /**
+     * 修改此用户的登录状态为在线
+     * @param username username
+     */
+    void updateStatusToOnline(String username);
+
+    /**
+     * 修改此用户的登录状态为离线
+     * @param username username
+     */
+    void updateStatusToOffLine(String username);
+
+
+    /**
+     * 踢人下线
+     * @param id id
+     */
+    void offline(Integer id);
+
+    /**
+     * 账号封禁
+     * @param id id
+     */
+    void ban(Integer id);
+
+    /**
+     * 根据id获取用户名
+     * @param id id
+     * @return username
+     */
+    String findUsernameById(Integer id);
+
+
+    /**
+     * 解封进
+     * @param username username
+     */
+    void unBan(String username);
 }

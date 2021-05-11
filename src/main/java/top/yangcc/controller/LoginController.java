@@ -46,12 +46,7 @@ public class LoginController {
      */
     @RequestMapping("/login")
     public Result login(@RequestBody User user) {
-        try {
-            return loginService.login(user);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Result.fail("登录失败");
-        }
+        return loginService.login(user);
     }
 
     /**
